@@ -37,11 +37,18 @@ public class GraphPanel extends JPanel {
         setLayout(new BorderLayout());
         log.info("Generating chart for goal {}", goal.name());
 
+        double balance = planner.calculateRemainingBalance();
         TimeSeriesCollection dataset = buildDataset(planner, goal, months);
         JFreeChart chart = buildChart(dataset);
 
         chartPanel = new ChartPanel(chart);
         chartPanel.setPreferredSize(new Dimension(650, 300));
+
+        if (balance <= 0) {
+            JLabel warn = new JLabel("Goal not achievable with current balance");
+            warn.setHorizontalAlignment(SwingConstants.CENTER);
+            add(warn, BorderLayout.NORTH);
+        }
 
         JButton saveButton = new JButton("Save Graph");
         saveButton.addActionListener(this::onSave);
@@ -52,8 +59,8 @@ public class GraphPanel extends JPanel {
 
     private TimeSeriesCollection buildDataset(SavingsPlanner planner, SavingsGoal goal, int months) {
         double startSaved = planner.calculateTotalSavingsForGoal();
-        double suggestedMonthly = planner.calculateSuggestedSavings(goal)[0];
-        double maxMonthly = planner.calculateRemainingBalance();
+        double suggestedMonthly = Math.max(0, planner.calculateSuggestedSavings(goal)[0]);
+        double maxMonthly = Math.max(0, planner.calculateRemainingBalance());
         double goalTotal = goal.total();
 
         double remainingNeed = Math.max(0, goalTotal - startSaved);
