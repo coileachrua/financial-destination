@@ -27,23 +27,9 @@ public class ExpensePanel extends JPanel {
         super(new BorderLayout(10, 10));
         setBorder(BorderFactory.createTitledBorder("Expenses"));
 
-
-        // --- 2) Editable table ---
-        EditableTablePanel tablePanel = new EditableTablePanel(
-                new String[]{"Category", "Total"});
+        EditableTablePanel tablePanel = createTablePanel(planner);
         JTable table = tablePanel.getTable();
-        table.getColumnModel()
-                .getColumn(1)
-                .setCellRenderer(new NumberRenderer(NumberFormat.getCurrencyInstance(Locale.UK)));
-        table.getColumnModel()
-                .getColumn(1)
-                .setCellEditor(new NumberEditor(NumberFormat.getCurrencyInstance(Locale.UK)));
 
-        for (BudgetCategory bc : planner.getExpenses()) {
-            tablePanel.addRow(bc.name(), bc.total());
-        }
-
-        // --- 3) Inputs ---
         JPanel inputs = new JPanel(new GridLayout(2, 2, 5, 5));
         JTextField nameField  = new JTextField();
         JTextField totalField = new JTextField();
@@ -56,11 +42,9 @@ public class ExpensePanel extends JPanel {
         left.add(inputs, BorderLayout.NORTH);
         left.add(tablePanel, BorderLayout.CENTER);
 
-        // --- 4) Footer: total expenses label ---
         JLabel totalLabel = new JLabel();
         updateTotalLabel(planner, totalLabel);
 
-        // --- 5) Table edit listener ---
         tablePanel.addTableModelListener(e -> {
             if (e.getType() == TableModelEvent.UPDATE) {
                 int r = e.getFirstRow();
@@ -73,7 +57,7 @@ public class ExpensePanel extends JPanel {
                     persistence.save(planner);
                     updateTotalLabel(planner, totalLabel);
                 } catch (Exception ex) {
-                    log.info(ex);
+                    log.info("Table update failed", ex);
                     JOptionPane.showMessageDialog(
                             this, "Invalid data", "Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -93,6 +77,7 @@ public class ExpensePanel extends JPanel {
                 tablePanel.addRow(nm, tot);
                 nameField.setText(""); totalField.setText("");
                 updateTotalLabel(planner, totalLabel);
+                log.info("Added expense {} = {}", nm, tot);
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(
                         this, "Invalid input", "Error", JOptionPane.ERROR_MESSAGE);
@@ -105,12 +90,29 @@ public class ExpensePanel extends JPanel {
                 persistence.save(planner);
                 tablePanel.removeRow(idx);
                 updateTotalLabel(planner, totalLabel);
+                log.info("Removed expense at row {}", idx);
             }
         });
 
         TwoColumnPanel container = new TwoColumnPanel(left, addBtn, removeBtn);
         container.addFooter(totalLabel);
         add(container, BorderLayout.CENTER);
+    }
+
+    private EditableTablePanel createTablePanel(SavingsPlanner planner) {
+        EditableTablePanel tablePanel = new EditableTablePanel(
+                new String[]{"Category", "Total"});
+        JTable table = tablePanel.getTable();
+        table.getColumnModel()
+                .getColumn(1)
+                .setCellRenderer(new NumberRenderer(NumberFormat.getCurrencyInstance(Locale.UK)));
+        table.getColumnModel()
+                .getColumn(1)
+                .setCellEditor(new NumberEditor(NumberFormat.getCurrencyInstance(Locale.UK)));
+        for (BudgetCategory bc : planner.getExpenses()) {
+            tablePanel.addRow(bc.name(), bc.total());
+        }
+        return tablePanel;
     }
 
     private void updateTotalLabel(SavingsPlanner planner, JLabel lbl) {

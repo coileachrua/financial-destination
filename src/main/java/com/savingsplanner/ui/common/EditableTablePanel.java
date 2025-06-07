@@ -18,7 +18,6 @@ public class EditableTablePanel extends JPanel {
         table = new JTable(model);
         table.setFillsViewportHeight(true);
 
-        // ** limit height to ~5 rows **
         int rowHeight = table.getRowHeight();
         int visibleRows = 5;
         Dimension dim = table.getPreferredScrollableViewportSize();
