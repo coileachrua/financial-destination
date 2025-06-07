@@ -17,7 +17,9 @@ import java.io.Serial;
 import java.text.NumberFormat;
 import java.util.Currency;
 import java.util.Locale;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 public class UserPanel extends JPanel {
     @Serial
     private static final long serialVersionUID = 2412462265L;
@@ -76,13 +78,14 @@ public class UserPanel extends JPanel {
                     String nm = nameObj.toString().trim();
                     double inc = ((Number) incomeObj).doubleValue();
                     double sav = ((Number) savedObj).doubleValue();
-                    planner.updateUser(row, new User(nm, inc, sav));
-                    persistence.save(planner);
-                    updateTotalLabel(planner, totalLabel);
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(
-                            this, "Invalid data", "Error", JOptionPane.ERROR_MESSAGE);
-                }
+                planner.updateUser(row, new User(nm, inc, sav));
+                persistence.save(planner);
+                updateTotalLabel(planner, totalLabel);
+                log.info("Updated user {}", nm);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(
+                        this, "Invalid data", "Error", JOptionPane.ERROR_MESSAGE);
+            }
             }
         });
 
@@ -102,6 +105,7 @@ public class UserPanel extends JPanel {
                 incomeField.setText("");
                 savedField.setText("");
                 updateTotalLabel(planner, totalLabel);
+                log.info("Added user {}", nm);
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(
                         this, "Invalid input", "Error", JOptionPane.ERROR_MESSAGE);
@@ -114,6 +118,7 @@ public class UserPanel extends JPanel {
                 persistence.save(planner);
                 tablePanel.removeRow(idx);
                 updateTotalLabel(planner, totalLabel);
+                log.info("Removed user at row {}", idx);
             }
         });
 

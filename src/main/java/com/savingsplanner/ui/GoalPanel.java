@@ -9,7 +9,9 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.Serial;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 public class GoalPanel extends JPanel {
     @Serial
     private static final long serialVersionUID = 6725257L;
@@ -32,7 +34,20 @@ public class GoalPanel extends JPanel {
         setBorder(BorderFactory.createTitledBorder(
                 BorderFactory.createEtchedBorder(), "Savings Goals", TitledBorder.LEFT, TitledBorder.TOP));
 
-        // LEFT: selector + inputs
+        JPanel left = buildLeftPanel();
+        JPanel right = buildRightPanel();
+
+        removeBtn.setEnabled(!planner.getGoals().isEmpty());
+        if (!planner.getGoals().isEmpty()) {
+            selector.setSelectedIndex(0);
+            populateFields();
+        }
+
+        add(left,  BorderLayout.CENTER);
+        add(right, BorderLayout.EAST);
+    }
+
+    private JPanel buildLeftPanel() {
         JPanel left = new JPanel(new BorderLayout(5,5));
         selector.setRenderer(new DefaultListCellRenderer(){
             @Override
@@ -54,8 +69,10 @@ public class GoalPanel extends JPanel {
         inputs.add(new JLabel("Total (£):"));     inputs.add(totalField);
         inputs.add(new JLabel("Months:"));        inputs.add(monthsField);
         left.add(inputs, BorderLayout.CENTER);
+        return left;
+    }
 
-        // RIGHT: save/remove buttons
+    private JPanel buildRightPanel() {
         JPanel right = new JPanel();
         right.setLayout(new BoxLayout(right, BoxLayout.Y_AXIS));
         saveBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -66,16 +83,7 @@ public class GoalPanel extends JPanel {
 
         saveBtn.addActionListener(this::onSaveGoal);
         removeBtn.addActionListener(this::onRemoveGoal);
-
-        // initial state
-        removeBtn.setEnabled(!planner.getGoals().isEmpty());
-        if (!planner.getGoals().isEmpty()) {
-            selector.setSelectedIndex(0);
-            populateFields();
-        }
-
-        add(left,  BorderLayout.CENTER);
-        add(right, BorderLayout.EAST);
+        return right;
     }
 
     private void refreshSelector() {
@@ -102,6 +110,7 @@ public class GoalPanel extends JPanel {
             SavingsGoal g = new SavingsGoal(name, total, months);
             planner.setGoal(g);
             persistence.save(planner);
+            log.info("Saved goal {} = {} over {} months", name, total, months);
 
             refreshSelector();
             selector.setSelectedItem(g);
@@ -122,6 +131,7 @@ public class GoalPanel extends JPanel {
 
         planner.removeGoal(idx);
         persistence.save(planner);
+        log.info("Removed goal {}", g.name());
         refreshSelector();
         if (selector.getItemCount()>0) {
             selector.setSelectedIndex(0);

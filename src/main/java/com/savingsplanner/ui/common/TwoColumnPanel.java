@@ -9,10 +9,8 @@ public class TwoColumnPanel extends JPanel {
     public TwoColumnPanel(JComponent leftComponent, JButton... rightButtons) {
         super(new BorderLayout(10,10));
 
-        // LEFT
         add(leftComponent, BorderLayout.CENTER);
 
-        // RIGHT
         right = new JPanel();
         right.setLayout(new BoxLayout(right, BoxLayout.Y_AXIS));
         for (int i = 0; i < rightButtons.length; i++) {
@@ -26,7 +24,6 @@ public class TwoColumnPanel extends JPanel {
         add(right, BorderLayout.EAST);
     }
 
-    /** Add a footer component under the buttons (with spacing). */
     public void addFooter(JComponent footer) {
         right.add(Box.createVerticalStrut(15));
         footer.setAlignmentX(Component.CENTER_ALIGNMENT);

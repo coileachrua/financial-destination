@@ -24,6 +24,9 @@ import java.io.File;
 import java.io.Serial;
 import java.time.YearMonth;
 
+import lombok.extern.log4j.Log4j2;
+
+@Log4j2
 public class GraphPanel extends JPanel {
     @Serial
     private static final long serialVersionUID = 46365252L;
@@ -32,22 +35,35 @@ public class GraphPanel extends JPanel {
 
     public GraphPanel(SavingsPlanner planner, SavingsGoal goal, int months) {
         setLayout(new BorderLayout());
+        log.info("Generating chart for goal {}", goal.name());
 
-        // Build the time series dataset
+        TimeSeriesCollection dataset = buildDataset(planner, goal, months);
+        JFreeChart chart = buildChart(dataset);
+
+        chartPanel = new ChartPanel(chart);
+        chartPanel.setPreferredSize(new Dimension(650, 300));
+
+        JButton saveButton = new JButton("Save Graph");
+        saveButton.addActionListener(this::onSave);
+
+        add(chartPanel, BorderLayout.CENTER);
+        add(saveButton, BorderLayout.SOUTH);
+    }
+
+    private TimeSeriesCollection buildDataset(SavingsPlanner planner, SavingsGoal goal, int months) {
         TimeSeries series = new TimeSeries("Cumulative Savings");
         double startSaved = planner.calculateTotalSavingsForGoal();
         double monthly = planner.calculateSuggestedSavings(goal)[0];
-        YearMonth ymStart = YearMonth.now();
-
+        YearMonth start = YearMonth.now();
         for (int i = 0; i <= months; i++) {
-            YearMonth current = ymStart.plusMonths(i);
+            YearMonth current = start.plusMonths(i);
             double saved = startSaved + i * monthly;
             series.add(new Month(current.getMonthValue(), current.getYear()), saved);
         }
+        return new TimeSeriesCollection(series);
+    }
 
-        TimeSeriesCollection dataset = new TimeSeriesCollection(series);
-
-        // Create chart
+    private JFreeChart buildChart(TimeSeriesCollection dataset) {
         JFreeChart chart = ChartFactory.createTimeSeriesChart(
                 "Savings Over Time",
                 "Date",
@@ -58,7 +74,6 @@ public class GraphPanel extends JPanel {
                 false
         );
 
-        // Style chart background and grid
         chart.setBackgroundPaint(Color.WHITE);
         XYPlot plot = chart.getXYPlot();
         plot.setBackgroundPaint(Color.WHITE);
@@ -66,29 +81,17 @@ public class GraphPanel extends JPanel {
         plot.setRangeGridlinePaint(Color.LIGHT_GRAY);
         plot.setAxisOffset(new RectangleInsets(5, 5, 5, 5));
 
-        // Vertical axis padding
         NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
         rangeAxis.setAutoRangeIncludesZero(true);
         rangeAxis.setLowerMargin(0.10);
         rangeAxis.setUpperMargin(0.10);
 
-        // Horizontal (time) axis padding and tick units
         DateAxis domainAxis = (DateAxis) plot.getDomainAxis();
         domainAxis.setLowerMargin(0.02);
         domainAxis.setUpperMargin(0.02);
         domainAxis.setTickUnit(new DateTickUnit(DateTickUnitType.MONTH, 3));
         domainAxis.setDateFormatOverride(new java.text.SimpleDateFormat("MMM-yy"));
-
-        // Wrap in ChartPanel
-        chartPanel = new ChartPanel(chart);
-        chartPanel.setPreferredSize(new Dimension(650, 300));
-
-        // Save button
-        JButton saveButton = new JButton("Save Graph");
-        saveButton.addActionListener(this::onSave);
-
-        add(chartPanel, BorderLayout.CENTER);
-        add(saveButton, BorderLayout.SOUTH);
+        return chart;
     }
 
     private void onSave(ActionEvent e) {
@@ -99,12 +102,14 @@ public class GraphPanel extends JPanel {
             dir.mkdirs();
             File out = new File(dir, "savings_chart.png");
             ImageIO.write(image, "png", out);
+            log.info("Graph saved to {}", out.getAbsolutePath());
             JOptionPane.showMessageDialog(this,
                     "Graph saved to " + out.getAbsolutePath(),
                     "Saved",
                     JOptionPane.INFORMATION_MESSAGE
             );
         } catch (Exception ex) {
+            log.error("Error saving graph", ex);
             JOptionPane.showMessageDialog(this,
                     "Error saving graph: " + ex.getMessage(),
                     "Save Error",
