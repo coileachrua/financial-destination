@@ -11,6 +11,7 @@ import com.savingsplanner.ui.ExpensePanel;
 import com.savingsplanner.ui.GoalPanel;
 import com.savingsplanner.ui.GraphPanel;
 import com.savingsplanner.util.DialogUtil;
+import lombok.extern.log4j.Log4j2;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -18,6 +19,7 @@ import java.awt.*;
 
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
+@Log4j2
 public class MainApp {
     public static void main(String[] args) {
         FlatDarkLaf.setup();
@@ -50,7 +52,7 @@ public class MainApp {
                     }
                     SwingUtilities.updateComponentTreeUI(frame);
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    log.error("Dark mode toggle failed", ex);
                 }
             });
 
