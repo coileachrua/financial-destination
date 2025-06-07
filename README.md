@@ -88,5 +88,8 @@ Contributions are welcome! Please follow these guidelines:
 * Avoid inline comments; rely on clear method names.
 * Log errors and key application events for troubleshooting.
 
----
+## License
+
+This project is released under the [MIT License](LICENSE).
+You are free to use, modify, and distribute the code as permitted by the license.
 
