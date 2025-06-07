@@ -26,7 +26,7 @@ public class MainApp {
 
         SwingUtilities.invokeLater(() -> {
             SavingsPlanner planner    = new SavingsPlanner();
-            PersistenceService ps     = new PersistenceService();
+            PersistenceService ps     = new PersistenceService("savings_data.json");
             ps.load(planner);
 
             if (planner.getUsers().isEmpty()) {

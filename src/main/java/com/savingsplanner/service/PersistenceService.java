@@ -15,10 +15,22 @@ import java.io.Serializable;
 public class PersistenceService implements Serializable {
     @Serial
     private static final long serialVersionUID = 646463464646L;
-    private final File file = new File("savings_data.json");
+    private final File file;
     private final ObjectMapper mapper = new ObjectMapper()
             .registerModule(new JavaTimeModule())
             .enable(SerializationFeature.INDENT_OUTPUT);
+
+    public PersistenceService() {
+        this("savings_data.json");
+    }
+
+    public PersistenceService(String path) {
+        this(new File(path));
+    }
+
+    public PersistenceService(File file) {
+        this.file = file;
+    }
 
     public void load(SavingsPlanner planner) {
         if (!file.exists()) return;
