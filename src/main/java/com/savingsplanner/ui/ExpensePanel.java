@@ -117,6 +117,7 @@ public class ExpensePanel extends JPanel {
 
     private void updateTotalLabel(SavingsPlanner planner, JLabel lbl) {
         double total = planner.calculateTotalExpenses();
-        lbl.setText("Total Expenses: " + total);
+        NumberFormat fmt = NumberFormat.getCurrencyInstance(Locale.UK);
+        lbl.setText("Total Expenses: " + fmt.format(total));
     }
 }

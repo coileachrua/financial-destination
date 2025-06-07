@@ -129,6 +129,7 @@ public class UserPanel extends JPanel {
 
     private void updateTotalLabel(SavingsPlanner planner, JLabel lbl) {
         double total = planner.calculateTotalIncome();
-        lbl.setText("Total Income: " + total);
+        NumberFormat fmt = NumberFormat.getCurrencyInstance(Locale.UK);
+        lbl.setText("Total Income: " + fmt.format(total));
     }
 }
