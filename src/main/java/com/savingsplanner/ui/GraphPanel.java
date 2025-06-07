@@ -51,16 +51,33 @@ public class GraphPanel extends JPanel {
     }
 
     private TimeSeriesCollection buildDataset(SavingsPlanner planner, SavingsGoal goal, int months) {
-        TimeSeries series = new TimeSeries("Cumulative Savings");
         double startSaved = planner.calculateTotalSavingsForGoal();
-        double monthly = planner.calculateSuggestedSavings(goal)[0];
+        double suggestedMonthly = planner.calculateSuggestedSavings(goal)[0];
+        double maxMonthly = planner.calculateRemainingBalance();
+        double goalTotal = goal.total();
+
+        double remainingNeed = Math.max(0, goalTotal - startSaved);
+        int monthsMaxNeeded = maxMonthly > 0 ? (int) Math.ceil(remainingNeed / maxMonthly) : 0;
+        int monthsToShow = Math.max(months, monthsMaxNeeded);
+
+        TimeSeries suggested = new TimeSeries("Suggested Plan");
+        TimeSeries accelerated = new TimeSeries("Max Savings Plan");
+
         YearMonth start = YearMonth.now();
-        for (int i = 0; i <= months; i++) {
+        for (int i = 0; i <= monthsToShow; i++) {
             YearMonth current = start.plusMonths(i);
-            double saved = startSaved + i * monthly;
-            series.add(new Month(current.getMonthValue(), current.getYear()), saved);
+            double savedSuggested = Math.min(goalTotal, startSaved + i * suggestedMonthly);
+            double savedMax = Math.min(goalTotal, startSaved + i * maxMonthly);
+            suggested.add(new Month(current.getMonthValue(), current.getYear()), savedSuggested);
+            accelerated.add(new Month(current.getMonthValue(), current.getYear()), savedMax);
         }
-        return new TimeSeriesCollection(series);
+
+        TimeSeriesCollection dataset = new TimeSeriesCollection();
+        dataset.addSeries(suggested);
+        if (maxMonthly > suggestedMonthly && monthsMaxNeeded > 0) {
+            dataset.addSeries(accelerated);
+        }
+        return dataset;
     }
 
     private JFreeChart buildChart(TimeSeriesCollection dataset) {
@@ -69,7 +86,7 @@ public class GraphPanel extends JPanel {
                 "Date",
                 "Total Saved (£)",
                 dataset,
-                false,
+                true,
                 true,
                 false
         );
