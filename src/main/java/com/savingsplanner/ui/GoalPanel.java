@@ -115,6 +115,7 @@ public class GoalPanel extends JPanel {
             refreshSelector();
             selector.setSelectedItem(g);
         } catch (Exception ex) {
+            log.error("Failed to save goal", ex);
             JOptionPane.showMessageDialog(this,
                     "Enter a non-empty name, numeric total, and months>0.",
                     "Input Error", JOptionPane.ERROR_MESSAGE);

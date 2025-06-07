@@ -78,14 +78,15 @@ public class UserPanel extends JPanel {
                     String nm = nameObj.toString().trim();
                     double inc = ((Number) incomeObj).doubleValue();
                     double sav = ((Number) savedObj).doubleValue();
-                planner.updateUser(row, new User(nm, inc, sav));
-                persistence.save(planner);
-                updateTotalLabel(planner, totalLabel);
-                log.info("Updated user {}", nm);
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(
-                        this, "Invalid data", "Error", JOptionPane.ERROR_MESSAGE);
-            }
+                    planner.updateUser(row, new User(nm, inc, sav));
+                    persistence.save(planner);
+                    updateTotalLabel(planner, totalLabel);
+                    log.info("Updated user {}", nm);
+                } catch (Exception ex) {
+                    log.error("Failed to update user", ex);
+                    JOptionPane.showMessageDialog(
+                            this, "Invalid data", "Error", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
 
@@ -107,6 +108,7 @@ public class UserPanel extends JPanel {
                 updateTotalLabel(planner, totalLabel);
                 log.info("Added user {}", nm);
             } catch (Exception ex) {
+                log.error("Failed to add user", ex);
                 JOptionPane.showMessageDialog(
                         this, "Invalid input", "Error", JOptionPane.ERROR_MESSAGE);
             }
