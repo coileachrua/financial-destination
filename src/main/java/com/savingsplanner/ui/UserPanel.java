@@ -133,7 +133,12 @@ public class UserPanel extends JPanel {
         if (value instanceof Number n) {
             return n.doubleValue();
         }
-        return fmt.parse(value.toString().trim()).doubleValue();
+        String txt = value.toString().trim();
+        try {
+            return fmt.parse(txt).doubleValue();
+        } catch (Exception ex) {
+            return Double.parseDouble(txt.replaceAll("[^0-9.\-]", ""));
+        }
     }
 
     private void updateTotalLabel(SavingsPlanner planner, JLabel lbl) {
