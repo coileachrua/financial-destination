@@ -63,15 +63,23 @@ public final class DialogUtil {
         sb.append(String.format("2) Total expenses (all categories): £%,.2f%n", totalExpenses));
         sb.append(String.format("3) Remaining balance (1 − 2): £%,.2f%n%n", remainingBalance));
 
-        sb.append(String.format("4) Total already saved (all users): £%,.2f%n", totalAlreadySaved));
-        sb.append(String.format("5) Remaining to save (%,.2f − %,.2f): £%,.2f%n",
+        double needs = totalIncome * 0.50;
+        double wants = totalIncome * 0.30;
+        double savings = totalIncome * 0.20;
+        sb.append("4) 50/30/20 rule suggestion:\n");
+        sb.append(String.format("   • Needs (50%%): £%,.2f%n", needs));
+        sb.append(String.format("   • Wants (30%%): £%,.2f%n", wants));
+        sb.append(String.format("   • Savings (20%%): £%,.2f%n%n", savings));
+
+        sb.append(String.format("5) Total already saved (all users): £%,.2f%n", totalAlreadySaved));
+        sb.append(String.format("6) Remaining to save (%,.2f − %,.2f): £%,.2f%n",
                 goalTotal, totalAlreadySaved, remainingNeed));
 
         if (remainingBalance <= 0) {
             sb.append("\n→ Remaining balance is zero or negative. You have no funds available to save toward this goal.\n");
         } else {
             double requiredMonthly = (goalTotal - totalAlreadySaved) / monthsRemaining;
-            sb.append(String.format("6) Monthly savings required (5 ÷ %d): £%,.2f%n%n",
+        sb.append(String.format("7) Monthly savings required (6 ÷ %d): £%,.2f%n%n",
                     monthsRemaining, requiredMonthly));
 
             boolean isAchievable = (requiredMonthly <= remainingBalance);
@@ -88,6 +96,13 @@ public final class DialogUtil {
                 sb.append(String.format("   • You need £%,.2f per month.%n", requiredMonthly));
                 sb.append(String.format("   • If you save £%,.2f each month, you’ll hit £%,.2f on: %s%n",
                         requiredMonthly, goalTotal, achievedDate.format(ukFmt)));
+                LocalDate fastestDate = today.plusMonths((int) Math.ceil(monthsNeededIfMax));
+                sb.append(String.format("   • Saving your entire remaining balance (£%,.2f) hits £%,.2f on: %s%n",
+                        remainingBalance, goalTotal, fastestDate.format(ukFmt)));
+                double monthsAtTwenty = remainingNeed / savings;
+                LocalDate dateAtTwenty = today.plusMonths((int) Math.ceil(monthsAtTwenty));
+                sb.append(String.format("   • Saving the 20%% amount (£%,.2f) hits £%,.2f on: %s%n",
+                        savings, goalTotal, dateAtTwenty.format(ukFmt)));
             } else {
                 sb.append(String.format("→ £%,.2f > £%,.2f, so goal is not achievable.%n%n",
                         requiredMonthly, remainingBalance));
@@ -96,6 +111,10 @@ public final class DialogUtil {
                         goalTotal, remainingBalance, monthsNeededIfMax, monthsToAchieve));
                 sb.append(String.format("   • At £%,.2f/month, you’ll hit £%,.2f on: %s%n",
                         remainingBalance, goalTotal, achievedDate.format(ukFmt)));
+                double monthsAtTwenty = remainingNeed / savings;
+                LocalDate dateAtTwenty = today.plusMonths((int) Math.ceil(monthsAtTwenty));
+                sb.append(String.format("   • Saving the 20%% amount (£%,.2f) hits £%,.2f on: %s%n",
+                        savings, goalTotal, dateAtTwenty.format(ukFmt)));
             }
         }
 
