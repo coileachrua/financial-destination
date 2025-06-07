@@ -52,7 +52,7 @@ public class ExpensePanel extends JPanel {
                 Object totObj = table.getValueAt(r, 1);
                 try {
                     String nm    = catObj.toString().trim();
-                    double tot   = ((Number)totObj).doubleValue();
+                    double tot   = parseCell(totObj);
                     planner.updateExpense(r, new BudgetCategory(nm, tot));
                     persistence.save(planner);
                     updateTotalLabel(planner, totalLabel);
@@ -98,6 +98,14 @@ public class ExpensePanel extends JPanel {
         TwoColumnPanel container = new TwoColumnPanel(left, addBtn, removeBtn);
         container.addFooter(totalLabel);
         add(container, BorderLayout.CENTER);
+    }
+
+    private double parseCell(Object value) throws Exception {
+        if (value instanceof Number n) {
+            return n.doubleValue();
+        }
+        NumberFormat fmt = NumberFormat.getCurrencyInstance(Locale.UK);
+        return fmt.parse(value.toString().trim()).doubleValue();
     }
 
     private EditableTablePanel createTablePanel(SavingsPlanner planner) {
