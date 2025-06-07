@@ -1,43 +1,16 @@
 {
   "users" : [ {
-    "name" : "Josh",
-    "income" : 6800.0,
-    "currentSavings" : 0.0
+    "name" : "Alice",
+    "income" : 3000.0,
+    "currentSavings" : 500.0
   } ],
   "expenses" : [ {
     "name" : "Rent",
-    "total" : 1950.0
-  }, {
-    "name" : "Electricity",
-    "total" : 90.0
-  }, {
-    "name" : "Food",
-    "total" : 350.0
-  }, {
-    "name" : "Subscriptions",
-    "total" : 100.0
-  }, {
-    "name" : "Internet & Mobile",
-    "total" : 80.0
-  }, {
-    "name" : "Transport",
-    "total" : 150.0
-  }, {
-    "name" : "Insurance",
-    "total" : 120.0
-  }, {
-    "name" : "Going Out / Fun",
-    "total" : 200.0
-  }, {
-    "name" : "Misc. / Buffer",
-    "total" : 410.0
-  }, {
-    "name" : "Pet",
-    "total" : 40.0
+    "total" : 1000.0
   } ],
   "goals" : [ {
-    "name" : "Wedding",
-    "total" : 12000.0,
-    "months" : 24
+    "name" : "Vacation",
+    "total" : 2000.0,
+    "months" : 12
   } ]
 }
