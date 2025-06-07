@@ -9,6 +9,8 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.Serial;
+import java.util.Objects;
+
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -124,11 +126,15 @@ public class GoalPanel extends JPanel {
 
     private void onRemoveGoal(ActionEvent e) {
         int idx = selector.getSelectedIndex();
-        if (idx < 0) return;
+        if (idx < 0){
+            return;
+        }
         SavingsGoal g = (SavingsGoal) selector.getSelectedItem();
         int choice = JOptionPane.showConfirmDialog(
-                this, "Remove “" + g.name() + "”?", "Confirm Remove", JOptionPane.YES_NO_OPTION);
-        if (choice != JOptionPane.YES_OPTION) return;
+                this, "Remove “" + Objects.requireNonNull(g).name() + "”?", "Confirm Remove", JOptionPane.YES_NO_OPTION);
+        if (choice != JOptionPane.YES_OPTION) {
+            return;
+        }
 
         planner.removeGoal(idx);
         persistence.save(planner);
