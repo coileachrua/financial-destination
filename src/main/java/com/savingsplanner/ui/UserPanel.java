@@ -76,8 +76,8 @@ public class UserPanel extends JPanel {
                 Object savedObj = table.getValueAt(row, 2);
                 try {
                     String nm = nameObj.toString().trim();
-                    double inc = ((Number) incomeObj).doubleValue();
-                    double sav = ((Number) savedObj).doubleValue();
+                    double inc = parseCell(incomeObj, fmt);
+                    double sav = parseCell(savedObj, fmt);
                     planner.updateUser(row, new User(nm, inc, sav));
                     persistence.save(planner);
                     updateTotalLabel(planner, totalLabel);
@@ -127,6 +127,13 @@ public class UserPanel extends JPanel {
         TwoColumnPanel container = new TwoColumnPanel(left, addBtn, removeBtn);
         container.addFooter(totalLabel);
         add(container, BorderLayout.CENTER);
+    }
+
+    private double parseCell(Object value, NumberFormat fmt) throws Exception {
+        if (value instanceof Number n) {
+            return n.doubleValue();
+        }
+        return fmt.parse(value.toString().trim()).doubleValue();
     }
 
     private void updateTotalLabel(SavingsPlanner planner, JLabel lbl) {

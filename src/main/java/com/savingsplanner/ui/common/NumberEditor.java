@@ -13,4 +13,14 @@ public class NumberEditor extends DefaultCellEditor {
         ftf.setHorizontalAlignment(SwingConstants.RIGHT);
         ftf.setFocusLostBehavior(JFormattedTextField.COMMIT_OR_REVERT);
     }
+
+    @Override
+    public Object getCellEditorValue() {
+        JFormattedTextField ftf = (JFormattedTextField) getComponent();
+        Object value = ftf.getValue();
+        if (value instanceof Number n) {
+            return n.doubleValue();
+        }
+        return super.getCellEditorValue();
+    }
 }
