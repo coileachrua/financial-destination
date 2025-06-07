@@ -38,6 +38,10 @@
   "goals" : [ {
     "name" : "Wedding",
     "total" : 12000.0,
+    "months" : 1
+  }, {
+    "name" : "House",
+    "total" : 100000.0,
     "months" : 24
   } ]
 }

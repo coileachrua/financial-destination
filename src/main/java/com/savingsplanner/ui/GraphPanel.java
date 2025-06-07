@@ -37,11 +37,18 @@ public class GraphPanel extends JPanel {
         setLayout(new BorderLayout());
         log.info("Generating chart for goal {}", goal.name());
 
+        double balance = planner.calculateRemainingBalance();
         TimeSeriesCollection dataset = buildDataset(planner, goal, months);
         JFreeChart chart = buildChart(dataset);
 
         chartPanel = new ChartPanel(chart);
         chartPanel.setPreferredSize(new Dimension(650, 300));
+
+        if (balance <= 0) {
+            JLabel warn = new JLabel("Goal not achievable with current balance");
+            warn.setHorizontalAlignment(SwingConstants.CENTER);
+            add(warn, BorderLayout.NORTH);
+        }
 
         JButton saveButton = new JButton("Save Graph");
         saveButton.addActionListener(this::onSave);
