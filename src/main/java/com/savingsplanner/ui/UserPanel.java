@@ -68,20 +68,61 @@ public class UserPanel extends JPanel {
         JLabel totalLabel = new JLabel();
         updateTotalLabel(planner, totalLabel);
 
-        tablePanel.addTableModelListener(e ->
-                handleTableUpdate(e, table, planner, persistence, totalLabel)
-        );
+        tablePanel.addTableModelListener(e -> {
+            if (e.getType() == TableModelEvent.UPDATE) {
+                int row = e.getFirstRow();
+                Object nameObj = table.getValueAt(row, 0);
+                Object incomeObj = table.getValueAt(row, 1);
+                Object savedObj = table.getValueAt(row, 2);
+                try {
+                    String nm = nameObj.toString().trim();
+                    double inc = ((Number) incomeObj).doubleValue();
+                    double sav = ((Number) savedObj).doubleValue();
+                    planner.updateUser(row, new User(nm, inc, sav));
+                    persistence.save(planner);
+                    updateTotalLabel(planner, totalLabel);
+                    log.info("Updated user {}", nm);
+                } catch (Exception ex) {
+                    log.error("Failed to update user", ex);
+                    JOptionPane.showMessageDialog(
+                            this, "Invalid data", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
 
         JButton addBtn = new JButton("Add User");
         JButton removeBtn = new JButton("Remove Selected");
 
-        addBtn.addActionListener(e ->
-                handleAddUser(nameField, incomeField, savedField,
-                        tablePanel, planner, persistence, totalLabel)
-        );
-        removeBtn.addActionListener(e ->
-                handleRemoveUser(table, tablePanel, planner, persistence, totalLabel)
-        );
+        addBtn.addActionListener((ActionEvent e) -> {
+            try {
+                String nm = nameField.getText().trim();
+                double inc = Double.parseDouble(incomeField.getText().trim());
+                double sav = Double.parseDouble(savedField.getText().trim());
+                if (nm.isEmpty()) throw new IllegalArgumentException();
+                planner.addUser(new User(nm, inc, sav));
+                persistence.save(planner);
+                tablePanel.addRow(nm, inc, sav);
+                nameField.setText("");
+                incomeField.setText("");
+                savedField.setText("");
+                updateTotalLabel(planner, totalLabel);
+                log.info("Added user {}", nm);
+            } catch (Exception ex) {
+                log.error("Failed to add user", ex);
+                JOptionPane.showMessageDialog(
+                        this, "Invalid input", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+        removeBtn.addActionListener(e -> {
+            int idx = table.getSelectedRow();
+            if (idx >= 0) {
+                planner.removeUser(idx);
+                persistence.save(planner);
+                tablePanel.removeRow(idx);
+                updateTotalLabel(planner, totalLabel);
+                log.info("Removed user at row {}", idx);
+            }
+        });
 
         TwoColumnPanel container = new TwoColumnPanel(left, addBtn, removeBtn);
         container.addFooter(totalLabel);
@@ -92,66 +133,5 @@ public class UserPanel extends JPanel {
         double total = planner.calculateTotalIncome();
         NumberFormat fmt = NumberFormat.getCurrencyInstance(Locale.UK);
         lbl.setText("Total Income: " + fmt.format(total));
-    }
-
-    private void handleTableUpdate(TableModelEvent e, JTable table,
-                                   SavingsPlanner planner,
-                                   PersistenceService persistence,
-                                   JLabel totalLabel) {
-        if (e.getType() == TableModelEvent.UPDATE) {
-            int row = e.getFirstRow();
-            Object nameObj = table.getValueAt(row, 0);
-            Object incomeObj = table.getValueAt(row, 1);
-            Object savedObj = table.getValueAt(row, 2);
-            try {
-                String nm = nameObj.toString().trim();
-                double inc = ((Number) incomeObj).doubleValue();
-                double sav = ((Number) savedObj).doubleValue();
-                planner.updateUser(row, new User(nm, inc, sav));
-                persistence.save(planner);
-                updateTotalLabel(planner, totalLabel);
-                log.info("Updated user {}", nm);
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(
-                        this, "Invalid data", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        }
-    }
-
-    private void handleAddUser(JTextField nameField, JTextField incomeField,
-                               JTextField savedField, EditableTablePanel tablePanel,
-                               SavingsPlanner planner, PersistenceService persistence,
-                               JLabel totalLabel) {
-        try {
-            String nm = nameField.getText().trim();
-            double inc = Double.parseDouble(incomeField.getText().trim());
-            double sav = Double.parseDouble(savedField.getText().trim());
-            if (nm.isEmpty()) throw new IllegalArgumentException();
-            planner.addUser(new User(nm, inc, sav));
-            persistence.save(planner);
-            tablePanel.addRow(nm, inc, sav);
-            nameField.setText("");
-            incomeField.setText("");
-            savedField.setText("");
-            updateTotalLabel(planner, totalLabel);
-            log.info("Added user {}", nm);
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(
-                    this, "Invalid input", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    private void handleRemoveUser(JTable table, EditableTablePanel tablePanel,
-                                  SavingsPlanner planner,
-                                  PersistenceService persistence,
-                                  JLabel totalLabel) {
-        int idx = table.getSelectedRow();
-        if (idx >= 0) {
-            planner.removeUser(idx);
-            persistence.save(planner);
-            tablePanel.removeRow(idx);
-            updateTotalLabel(planner, totalLabel);
-            log.info("Removed user at row {}", idx);
-        }
     }
 }
