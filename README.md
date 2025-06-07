@@ -15,7 +15,7 @@ A simple Java Swing application for planning and tracking personal savings goals
 
 ## Prerequisites
 
-* Java Development Kit (JDK) 21 or higher
+* Java Development Kit (JDK) 17 or higher
 * Apache Maven 3.6 or higher
 
 ## Installation & Build
@@ -83,7 +83,7 @@ java -jar target/savings-planner-1.0-SNAPSHOT.jar
 
 Contributions are welcome! Please follow these guidelines:
 
-* Use Java 21 and Maven best practices.
+* Use Java 17 and Maven best practices.
 * Keep methods small and descriptive; adhere to DRY principles.
 * Avoid inline comments; rely on clear method names.
 * Log errors and key application events for troubleshooting.
