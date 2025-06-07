@@ -13,7 +13,7 @@
     <description>A simple Swing‐based savings planner with JFreeChart</description>
 
     <properties>
-        <java.version>21</java.version>
+        <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jfreechart.version>1.5.4</jfreechart.version>
         <jcommon.version>1.0.24</jcommon.version>
@@ -70,7 +70,7 @@
 
     <build>
         <plugins>
-            <!-- Compiler plugin: compile with Java 21 -->
+            <!-- Compiler plugin: compile with Java 17 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
