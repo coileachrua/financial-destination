@@ -113,13 +113,7 @@ public class GraphPanel extends JPanel {
 
     private void onSave(ActionEvent e) {
         try {
-            BufferedImage image = chartPanel.getChart()
-                    .createBufferedImage(chartPanel.getWidth(), chartPanel.getHeight());
-            File dir = new File("src/main/resources");
-            dir.mkdirs();
-            File out = new File(dir, "savings_chart.png");
-            ImageIO.write(image, "png", out);
-            log.info("Graph saved to {}", out.getAbsolutePath());
+            File out = saveChartImage();
             JOptionPane.showMessageDialog(this,
                     "Graph saved to " + out.getAbsolutePath(),
                     "Saved",
@@ -133,5 +127,16 @@ public class GraphPanel extends JPanel {
                     JOptionPane.ERROR_MESSAGE
             );
         }
+    }
+
+    private File saveChartImage() throws Exception {
+        BufferedImage image = chartPanel.getChart()
+                .createBufferedImage(chartPanel.getWidth(), chartPanel.getHeight());
+        File dir = new File("src/main/resources");
+        dir.mkdirs();
+        File out = new File(dir, "savings_chart.png");
+        ImageIO.write(image, "png", out);
+        log.info("Graph saved to {}", out.getAbsolutePath());
+        return out;
     }
 }

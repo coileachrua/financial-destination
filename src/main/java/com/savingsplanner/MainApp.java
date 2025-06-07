@@ -78,32 +78,9 @@ public class MainApp {
 
             JButton calculateAll = new JButton("Calculate & Show Analysis");
             calculateAll.setAlignmentX(Component.CENTER_ALIGNMENT);
-            calculateAll.addActionListener(e -> {
-                SavingsGoal goal = ((GoalPanel) main.getComponent(4)).getSelectedGoal();
-                if (goal == null) {
-                    JOptionPane.showMessageDialog(frame,
-                            "Please select or save a goal first.",
-                            "No Goal", JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
-
-                int months       = goal.months();
-                double income    = planner.calculateTotalIncome();
-                double expenses  = planner.calculateTotalExpenses();
-                double balance   = planner.calculateRemainingBalance();
-                double saved     = planner.calculateTotalSavingsForGoal();
-
-                DialogUtil.showResultsDialog(
-                        frame, goal, months, income, expenses, balance, saved
-                );
-
-                GraphPanel chart = new GraphPanel(planner, goal, months);
-                JDialog dlg = new JDialog(frame, "Savings Trajectory", true);
-                dlg.getContentPane().add(chart);
-                dlg.pack();
-                dlg.setLocationRelativeTo(frame);
-                dlg.setVisible(true);
-            });
+            calculateAll.addActionListener(e ->
+                    showGoalAnalysis(frame, main, planner)
+            );
             main.add(calculateAll);
             main.add(Box.createVerticalGlue());
 
@@ -120,5 +97,32 @@ public class MainApp {
                     new Thread(() -> ps.save(planner))
             );
         });
+    }
+
+    private static void showGoalAnalysis(JFrame frame, JPanel main, SavingsPlanner planner) {
+        SavingsGoal goal = ((GoalPanel) main.getComponent(4)).getSelectedGoal();
+        if (goal == null) {
+            JOptionPane.showMessageDialog(frame,
+                    "Please select or save a goal first.",
+                    "No Goal", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int months       = goal.months();
+        double income    = planner.calculateTotalIncome();
+        double expenses  = planner.calculateTotalExpenses();
+        double balance   = planner.calculateRemainingBalance();
+        double saved     = planner.calculateTotalSavingsForGoal();
+
+        DialogUtil.showResultsDialog(
+                frame, goal, months, income, expenses, balance, saved
+        );
+
+        GraphPanel chart = new GraphPanel(planner, goal, months);
+        JDialog dlg = new JDialog(frame, "Savings Trajectory", true);
+        dlg.getContentPane().add(chart);
+        dlg.pack();
+        dlg.setLocationRelativeTo(frame);
+        dlg.setVisible(true);
     }
 }

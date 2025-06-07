@@ -20,6 +20,34 @@ public final class DialogUtil {
                                          double remainingBalance,
                                          double totalAlreadySaved) {
 
+        String text = buildAnalysisText(goal, monthsRemaining, totalIncome,
+                totalExpenses, remainingBalance, totalAlreadySaved);
+
+        JTextArea textArea = new JTextArea(text);
+        textArea.setEditable(false);
+        textArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
+        textArea.setCaretPosition(0);
+        textArea.setLineWrap(true);
+        textArea.setWrapStyleWord(true);
+
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        scrollPane.setPreferredSize(new Dimension(550, 400));
+
+        JOptionPane.showMessageDialog(
+                parent,
+                scrollPane,
+                "Savings Goal Analysis",
+                JOptionPane.INFORMATION_MESSAGE
+        );
+    }
+
+    private static String buildAnalysisText(SavingsGoal goal,
+                                            int monthsRemaining,
+                                            double totalIncome,
+                                            double totalExpenses,
+                                            double remainingBalance,
+                                            double totalAlreadySaved) {
+
         double goalTotal = goal.total();
         double remainingNeed = goalTotal - totalAlreadySaved;
 
@@ -71,21 +99,6 @@ public final class DialogUtil {
             }
         }
 
-        JTextArea textArea = new JTextArea(sb.toString());
-        textArea.setEditable(false);
-        textArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
-        textArea.setCaretPosition(0);
-        textArea.setLineWrap(true);
-        textArea.setWrapStyleWord(true);
-
-        JScrollPane scrollPane = new JScrollPane(textArea);
-        scrollPane.setPreferredSize(new Dimension(550, 400));
-
-        JOptionPane.showMessageDialog(
-                parent,
-                scrollPane,
-                "Savings Goal Analysis",
-                JOptionPane.INFORMATION_MESSAGE
-        );
+        return sb.toString();
     }
 }
