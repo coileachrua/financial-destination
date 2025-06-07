@@ -6,6 +6,7 @@ import com.savingsplanner.model.User;
 import com.savingsplanner.model.SavingsGoal;
 import com.savingsplanner.service.PersistenceService;
 import com.savingsplanner.service.SavingsPlanner;
+import com.savingsplanner.ui.SettingsDialog;
 import com.savingsplanner.ui.UserPanel;
 import com.savingsplanner.ui.ExpensePanel;
 import com.savingsplanner.ui.GoalPanel;
@@ -16,13 +17,32 @@ import lombok.extern.log4j.Log4j2;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.util.prefs.Preferences;
 
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 @Log4j2
 public class MainApp {
+
+    private static final Preferences PREFS = Preferences.userNodeForPackage(MainApp.class);
+
+    public static void applyTheme(boolean dark, JFrame frame) {
+        try {
+            if (dark) {
+                UIManager.setLookAndFeel(new FlatDarkLaf());
+            } else {
+                UIManager.setLookAndFeel(new FlatLightLaf());
+            }
+            SwingUtilities.updateComponentTreeUI(frame);
+            PREFS.putBoolean("darkMode", dark);
+        } catch (Exception ex) {
+            log.error("Failed to apply theme", ex);
+        }
+    }
+
     public static void main(String[] args) {
-        FlatDarkLaf.setup();
+        boolean dark = PREFS.getBoolean("darkMode", true);
+        if (dark) FlatDarkLaf.setup(); else FlatLightLaf.setup();
 
         SwingUtilities.invokeLater(() -> {
             SavingsPlanner planner    = new SavingsPlanner();
@@ -37,24 +57,13 @@ public class MainApp {
             frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 
             JMenuBar menuBar = new JMenuBar();
-            JMenu view = new JMenu("View");
-            JCheckBoxMenuItem darkModeItem = new JCheckBoxMenuItem("Dark Mode", true);
-            view.add(darkModeItem);
-            menuBar.add(view);
+            JMenu fileMenu = new JMenu("File");
+            JMenuItem settingsItem = new JMenuItem("Settings...");
+            fileMenu.add(settingsItem);
+            menuBar.add(fileMenu);
             frame.setJMenuBar(menuBar);
 
-            darkModeItem.addActionListener(e -> {
-                try {
-                    if (darkModeItem.isSelected()) {
-                        UIManager.setLookAndFeel(new FlatDarkLaf());
-                    } else {
-                        UIManager.setLookAndFeel(new FlatLightLaf());
-                    }
-                    SwingUtilities.updateComponentTreeUI(frame);
-                } catch (Exception ex) {
-                    log.error("Dark mode toggle failed", ex);
-                }
-            });
+            settingsItem.addActionListener(e -> SettingsDialog.showDialog(frame, ps));
 
             JPanel main = new JPanel();
             main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));

@@ -9,7 +9,7 @@ A simple Java Swing application for planning and tracking personal savings goals
 * **Savings Calculation**: Determine required monthly contributions to meet each goal.
 * **Visualization**: View a savings trajectory chart implemented with JFreeChart.
 * **Editable Tables**: Modify budget categories and goal parameters through a user-friendly table interface.
-* **Settings**: Configure application preferences, including UI theme (light/dark) and file locations.
+* **Settings**: Configure application preferences, including UI theme (light/dark) and file locations via the **File → Settings** menu.
 * **Persistence**: Save and load user data (goals, budgets, settings) as JSON files using Jackson.
 * **Logging**: Application events and errors are logged via Log4j2 (logs/app.log).
 
@@ -70,7 +70,7 @@ java -jar target/savings-planner-1.0-SNAPSHOT.jar
 
 * **Data File**: Default `savings_data.json` in the project root (or as specified in Settings).
 * **Logs**: Written to `logs/app.log`.
-* **UI Theme**: Toggle between light and dark themes via the Settings dialog.
+* **UI Theme**: Toggle between light and dark themes via the **File → Settings** dialog.
 
 ## Dependencies
 
