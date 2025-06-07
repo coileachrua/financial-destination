@@ -49,6 +49,9 @@ public class SavingsPlanner implements Serializable {
     }
 
     public void setGoal(SavingsGoal g) {
+        if (g.months() <= 0) {
+            throw new IllegalArgumentException("Goal months must be greater than zero");
+        }
         for (int i = 0; i < goals.size(); i++) {
             if (goals.get(i).name().equalsIgnoreCase(g.name())) {
                 goals.set(i, g);
@@ -89,6 +92,9 @@ public class SavingsPlanner implements Serializable {
     }
 
     public double calculateMonthlySavingsRequired(SavingsGoal goal) {
+        if (goal.months() <= 0) {
+            throw new IllegalArgumentException("Goal months must be greater than zero");
+        }
         double remaining = goal.total() - calculateTotalSavingsForGoal();
         return remaining / goal.months();
     }
