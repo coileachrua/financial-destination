@@ -6,6 +6,8 @@ import com.savingsplanner.model.User;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import java.util.prefs.Preferences;
+
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -14,8 +16,9 @@ public class PersistenceServiceTest {
 
     @Test
     void saveAndLoadRestoresData(@TempDir Path tempDir) {
-        String originalDir = System.getProperty("user.dir");
-        System.setProperty("user.dir", tempDir.toString());
+        Preferences prefs = Preferences.userNodeForPackage(PersistenceService.class);
+        String path = tempDir.resolve("data.json").toString();
+        prefs.put("dataFilePath", path);
         try {
             SavingsPlanner planner = new SavingsPlanner();
             planner.addUser(new User("Alice", 3000.0, 500.0));
@@ -32,7 +35,7 @@ public class PersistenceServiceTest {
             assertEquals(planner.getExpenses(), loaded.getExpenses());
             assertEquals(planner.getGoals(), loaded.getGoals());
         } finally {
-            System.setProperty("user.dir", originalDir);
+            prefs.remove("dataFilePath");
         }
     }
 }
