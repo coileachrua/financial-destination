@@ -105,7 +105,12 @@ public class ExpensePanel extends JPanel {
             return n.doubleValue();
         }
         NumberFormat fmt = NumberFormat.getCurrencyInstance(Locale.UK);
-        return fmt.parse(value.toString().trim()).doubleValue();
+        String txt = value.toString().trim();
+        try {
+            return fmt.parse(txt).doubleValue();
+        } catch (Exception ex) {
+            return Double.parseDouble(txt.replaceAll("[^0-9.\-]", ""));
+        }
     }
 
     private EditableTablePanel createTablePanel(SavingsPlanner planner) {
