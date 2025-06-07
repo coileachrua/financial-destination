@@ -57,7 +57,7 @@ public class ExpensePanel extends JPanel {
                     persistence.save(planner);
                     updateTotalLabel(planner, totalLabel);
                 } catch (Exception ex) {
-                    log.info("Table update failed", ex);
+                    log.error("Failed to update expense", ex);
                     JOptionPane.showMessageDialog(
                             this, "Invalid data", "Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -79,6 +79,7 @@ public class ExpensePanel extends JPanel {
                 updateTotalLabel(planner, totalLabel);
                 log.info("Added expense {} = {}", nm, tot);
             } catch (Exception ex) {
+                log.error("Failed to add expense", ex);
                 JOptionPane.showMessageDialog(
                         this, "Invalid input", "Error", JOptionPane.ERROR_MESSAGE);
             }

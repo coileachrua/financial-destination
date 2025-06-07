@@ -70,7 +70,6 @@
 
     <build>
         <plugins>
-            <!-- Compiler plugin: compile with Java 17 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -81,7 +80,6 @@
                 </configuration>
             </plugin>
 
-            <!-- Exec plugin: lets you run the Swing app via `mvn exec:java` -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>

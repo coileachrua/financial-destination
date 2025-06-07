@@ -37,7 +37,6 @@ public class SavingsPlannerTest {
         SavingsGoal goal = new SavingsGoal("Car", 5000.0, 10);
 
         double required = planner.calculateMonthlySavingsRequired(goal);
-        // current savings are 500, so remaining = 4500, over 10 months => 450 per month
         assertEquals(450.0, required, 0.001);
     }
 }
