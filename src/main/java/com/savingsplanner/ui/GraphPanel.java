@@ -54,28 +54,36 @@ public class GraphPanel extends JPanel {
         double startSaved = planner.calculateTotalSavingsForGoal();
         double suggestedMonthly = planner.calculateSuggestedSavings(goal)[0];
         double maxMonthly = planner.calculateRemainingBalance();
+        double twentyMonthly = planner.calculateTotalIncome() * 0.20;
         double goalTotal = goal.total();
 
         double remainingNeed = Math.max(0, goalTotal - startSaved);
         int monthsMaxNeeded = maxMonthly > 0 ? (int) Math.ceil(remainingNeed / maxMonthly) : 0;
-        int monthsToShow = Math.max(months, monthsMaxNeeded);
+        int monthsTwentyNeeded = twentyMonthly > 0 ? (int) Math.ceil(remainingNeed / twentyMonthly) : 0;
+        int monthsToShow = Math.max(Math.max(months, monthsMaxNeeded), monthsTwentyNeeded);
 
         TimeSeries suggested = new TimeSeries("Suggested Plan");
         TimeSeries accelerated = new TimeSeries("Max Savings Plan");
+        TimeSeries twentySeries = new TimeSeries("20% Income Plan");
 
         YearMonth start = YearMonth.now();
         for (int i = 0; i <= monthsToShow; i++) {
             YearMonth current = start.plusMonths(i);
             double savedSuggested = Math.min(goalTotal, startSaved + i * suggestedMonthly);
             double savedMax = Math.min(goalTotal, startSaved + i * maxMonthly);
+            double savedTwenty = Math.min(goalTotal, startSaved + i * twentyMonthly);
             suggested.add(new Month(current.getMonthValue(), current.getYear()), savedSuggested);
             accelerated.add(new Month(current.getMonthValue(), current.getYear()), savedMax);
+            twentySeries.add(new Month(current.getMonthValue(), current.getYear()), savedTwenty);
         }
 
         TimeSeriesCollection dataset = new TimeSeriesCollection();
         dataset.addSeries(suggested);
         if (maxMonthly > suggestedMonthly && monthsMaxNeeded > 0) {
             dataset.addSeries(accelerated);
+        }
+        if (twentyMonthly > 0) {
+            dataset.addSeries(twentySeries);
         }
         return dataset;
     }
