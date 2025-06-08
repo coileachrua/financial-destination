@@ -248,6 +248,12 @@ public final class DialogUtil {
             sb.append("\nNo funds available with this plan.\n");
             return sb.toString();
         }
+        if (type == PlanType.REQUIRED && monthlyPlan > remainingBalance) {
+            sb.append(String.format(
+                    "Required contribution exceeds available funds of £%,.2f. Goal cannot be met.%n",
+                    remainingBalance));
+            return sb.toString();
+        }
 
         int monthsNeeded = (int) Math.ceil(remainingNeed / monthlyPlan);
         LocalDate finish = today.plusMonths(monthsNeeded);
