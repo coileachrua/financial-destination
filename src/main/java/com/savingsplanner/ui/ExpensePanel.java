@@ -54,7 +54,9 @@ public class ExpensePanel extends JPanel {
                     String nm  = catObj.toString().trim();
                     double tot = parseCell(totObj);
                     // ensure the table stores a numeric value so it renders correctly
-                    table.setValueAt(tot, r, 1);
+                    if (!(totObj instanceof Number)) {
+                        table.setValueAt(tot, r, 1);
+                    }
                     planner.updateExpense(r, new BudgetCategory(nm, tot));
                     persistence.save(planner);
                     updateTotalLabel(planner, totalLabel);
