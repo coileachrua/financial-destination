@@ -11,7 +11,7 @@ import com.savingsplanner.ui.UserPanel;
 import com.savingsplanner.ui.ExpensePanel;
 import com.savingsplanner.ui.GoalPanel;
 import com.savingsplanner.ui.GraphPanel;
-import com.savingsplanner.util.DialogUtil;
+import com.savingsplanner.ui.AnalysisDialog;
 import lombok.extern.log4j.Log4j2;
 
 import javax.swing.*;
@@ -108,15 +108,9 @@ public class MainApp {
             return;
         }
 
-        int months       = goal.months();
-        double income    = planner.calculateTotalIncome();
-        double expenses  = planner.calculateTotalExpenses();
-        double balance   = planner.calculateRemainingBalance();
-        double saved     = planner.calculateTotalSavingsForGoal();
+        int months = goal.months();
 
-        DialogUtil.showResultsDialog(
-                frame, goal, months, income, expenses, balance, saved
-        );
+        AnalysisDialog.showDialog(frame, planner, goal);
 
         GraphPanel chart = new GraphPanel(planner, goal, months);
         JDialog dlg = new JDialog(frame, "Savings Trajectory", true);

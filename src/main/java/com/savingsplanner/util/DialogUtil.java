@@ -1,6 +1,7 @@
 package com.savingsplanner.util;
 
 import com.savingsplanner.model.SavingsGoal;
+import com.savingsplanner.util.PlanType;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -53,6 +54,12 @@ public final class DialogUtil {
         double goalTotal = goal.total();
         double remainingNeed = goalTotal - totalAlreadySaved;
 
+        if (remainingNeed <= 0) {
+            return String.format(
+                    "Savings Goal: \u201c%s\u201d (\u00A3%,.2f)%nGoal has already been reached!%n",
+                    goal.name(), goalTotal);
+        }
+
         StringBuilder sb = new StringBuilder();
         LocalDate today = LocalDate.now();
         DateTimeFormatter ukFmt = DateTimeFormatter.ofPattern("d MMMM yyyy");
@@ -68,7 +75,7 @@ public final class DialogUtil {
         double needs = totalIncome * 0.50;
         double wants = totalIncome * 0.30;
         double savings = totalIncome * 0.20;
-        sb.append("4) 50/30/20 rule suggestion:\n");
+        sb.append("4) 50/30/20 rule suggestion (ignores expenses):\n");
         sb.append(String.format("   • Needs (50%%): £%,.2f%n", needs));
         sb.append(String.format("   • Wants (30%%): £%,.2f%n", wants));
         sb.append(String.format("   • Savings (20%%): £%,.2f%n%n", savings));
@@ -121,7 +128,8 @@ public final class DialogUtil {
 
             double monthlyPlan = isAchievable ? requiredMonthly : remainingBalance;
             sb.append("\nSavings per UK tax year (starting 6 April 2025):\n");
-            sb.append(buildTaxYearSchedule(today, totalAlreadySaved, monthlyPlan, goal));
+            int monthsPlan = (int) Math.ceil(remainingNeed / monthlyPlan);
+            sb.append(buildTaxYearSchedule(today, totalAlreadySaved, monthlyPlan, goal, monthsPlan));
         }
 
         return sb.toString();
@@ -130,7 +138,8 @@ public final class DialogUtil {
     private static String buildTaxYearSchedule(LocalDate start,
                                                double startingSaved,
                                                double monthlySavings,
-                                               SavingsGoal goal) {
+                                               SavingsGoal goal,
+                                               int months) {
         record Info(double start, double added, double end) {}
 
         Map<String, Info> map = new LinkedHashMap<>();
@@ -139,7 +148,7 @@ public final class DialogUtil {
         double saved = startingSaved;
         double yearStartSaved = saved;
 
-        for (int m = 1; m <= goal.months(); m++) {
+        for (int m = 1; m <= months; m++) {
             saved = Math.min(goal.total(), saved + monthlySavings);
             current = start.plusMonths(m);
 
@@ -167,6 +176,89 @@ public final class DialogUtil {
                     "   • %s: start £%,.2f + £%,.2f = £%,.2f%n",
                     e.getKey(), info.start(), info.added(), info.end()));
         }
+        return sb.toString();
+    }
+
+    /**
+     * Build analysis text for the selected savings plan type.
+     */
+    public static String buildPlanAnalysisText(SavingsGoal goal,
+                                               int monthsRemaining,
+                                               double totalIncome,
+                                               double totalExpenses,
+                                               double remainingBalance,
+                                               double totalAlreadySaved,
+                                               PlanType type) {
+
+        double goalTotal = goal.total();
+        double remainingNeed = goalTotal - totalAlreadySaved;
+
+        if (remainingNeed <= 0) {
+            return String.format(
+                    "Savings Goal: \u201c%s\u201d (\u00A3%,.2f)%nGoal has already been reached!%n",
+                    goal.name(), goalTotal);
+        }
+
+        double needs = totalIncome * 0.50;
+        double wants = totalIncome * 0.30;
+        double savings = totalIncome * 0.20;
+
+        double monthlyPlan;
+        String label;
+        switch (type) {
+            case REQUIRED -> {
+                monthlyPlan = monthsRemaining > 0 ? remainingNeed / monthsRemaining : 0;
+                label = "Required for Goal";
+            }
+            case MAX -> {
+                monthlyPlan = remainingBalance;
+                label = "Maximum Savings";
+            }
+            case SUGGESTED -> {
+                monthlyPlan = savings;
+                label = "50/30/20 Suggestion (ignores expenses)";
+            }
+            default -> {
+                monthlyPlan = 0;
+                label = "";
+            }
+        }
+
+        StringBuilder sb = new StringBuilder();
+        LocalDate today = LocalDate.now();
+        DateTimeFormatter ukFmt = DateTimeFormatter.ofPattern("d MMMM yyyy");
+
+        sb.append(String.format("Savings Goal: “%s” (£%,.2f)%n", goal.name(), goalTotal));
+        sb.append("Plan: ").append(label).append("\n");
+        sb.append("Date run: ").append(today.format(ukFmt)).append("\n\n");
+
+        sb.append(String.format("Total income: £%,.2f%n", totalIncome));
+        if (type == PlanType.SUGGESTED) {
+            sb.append(String.format("Total expenses (50%%): £%,.2f%n", needs));
+            sb.append(String.format("Wants (30%%): £%,.2f%n", wants));
+            sb.append(String.format("Savings (20%%): £%,.2f%n", savings));
+        } else {
+            sb.append(String.format("Total expenses: £%,.2f%n", totalExpenses));
+            sb.append(String.format("Remaining balance: £%,.2f%n", remainingBalance));
+        }
+        sb.append(String.format("Already saved: £%,.2f%n%n", totalAlreadySaved));
+
+        sb.append(String.format("Monthly contribution: £%,.2f%n", monthlyPlan));
+        if (monthlyPlan <= 0) {
+            sb.append("\nNo funds available with this plan.\n");
+            return sb.toString();
+        }
+
+        int monthsNeeded = (int) Math.ceil(remainingNeed / monthlyPlan);
+        LocalDate finish = today.plusMonths(monthsNeeded);
+
+        sb.append(String.format("Months to hit £%,.2f: %d%n", goalTotal, monthsNeeded));
+        sb.append(String.format("Projected completion: %s%n%n", finish.format(ukFmt)));
+
+        sb.append("Savings per UK tax year (starting 6 April 2025):\n");
+        sb.append(buildTaxYearSchedule(
+                today, totalAlreadySaved, monthlyPlan, goal, monthsNeeded));
+
         return sb.toString();
     }
 }
