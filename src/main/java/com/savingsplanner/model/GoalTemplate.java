@@ -67,12 +67,11 @@ public enum GoalTemplate {
     }
 
     /**
-     * Get the total adjusted for the template if the goal name matches a template.
+     * Get the total adjusted for the template. Since template costs are now
+     * applied when a goal is saved, this simply returns {@code goal.total()}.
      */
     public static double adjustedTotalFor(SavingsGoal goal) {
-        return fromName(goal.name())
-                .map(t -> t.adjustTotal(goal.total()))
-                .orElse(goal.total());
+        return goal.total();
     }
 
     /**

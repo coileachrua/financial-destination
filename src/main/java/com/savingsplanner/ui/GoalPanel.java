@@ -126,7 +126,10 @@ public class GoalPanel extends JPanel {
             int    months = Integer.parseInt(monthsField.getText().trim());
             if (name.isEmpty() || months <= 0) throw new IllegalArgumentException();
 
-            // Template selection only fills the name; totals remain user-defined
+            Object sel = templateBox.getSelectedItem();
+            if (sel instanceof GoalTemplate t && t == GoalTemplate.HOUSE) {
+                total = t.adjustTotal(total);
+            }
 
             SavingsGoal g = new SavingsGoal(name, total, months);
             planner.setGoal(g);

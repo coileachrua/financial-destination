@@ -7,9 +7,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class GoalTemplateTest {
 
     @Test
-    void adjustedTotalAddsHouseExtras() {
-        SavingsGoal goal = new SavingsGoal("House", 20000.0, 12);
-        double adjusted = GoalTemplate.adjustedTotalFor(goal);
+    void adjustTotalAddsHouseExtras() {
+        double adjusted = GoalTemplate.HOUSE.adjustTotal(20000.0);
         assertEquals(30300.0, adjusted, 0.001);
     }
 
