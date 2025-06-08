@@ -7,6 +7,7 @@ A simple Java Swing application for planning and tracking personal savings goals
 * **Savings Goals**: Create and manage goals with target amount and deadline.
 * **Budget Tracking**: Record monthly income and expense categories to calculate available savings.
 * **Savings Calculation**: Determine required monthly contributions to meet each goal.
+* **Tax Year Breakdown**: View cumulative savings totals for each UK tax year starting 6 April 2025.
 * **Visualization**: View a savings trajectory chart implemented with JFreeChart.
 * **Editable Tables**: Modify budget categories and goal parameters through a user-friendly table interface.
 * **Settings**: Configure application preferences, including UI theme (light/dark) and file locations via the **File → Settings** menu.
