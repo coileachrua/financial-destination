@@ -1,7 +1,7 @@
 package com.savingsplanner.ui;
 
-import com.savingsplanner.model.SavingsGoal;
 import com.savingsplanner.model.GoalTemplate;
+import com.savingsplanner.model.SavingsGoal;
 import com.savingsplanner.service.SavingsPlanner;
 import com.savingsplanner.util.DialogUtil;
 import com.savingsplanner.util.PlanType;
@@ -9,7 +9,9 @@ import com.savingsplanner.util.PlanType;
 import javax.swing.*;
 import java.awt.*;
 
-/** Dialog showing savings analysis with selectable plans. */
+/**
+ * Dialog showing savings analysis with selectable plans.
+ */
 public class AnalysisDialog extends JDialog {
 
     private final JTextArea textArea = new JTextArea();
@@ -28,17 +30,21 @@ public class AnalysisDialog extends JDialog {
     }
 
     private void buildUI() {
-        setLayout(new BorderLayout(5,5));
+        setLayout(new BorderLayout(5, 5));
 
         JRadioButton req = new JRadioButton("Required for Goal");
         JRadioButton max = new JRadioButton("Max Savings");
         JRadioButton sug = new JRadioButton("50/30/20");
         ButtonGroup group = new ButtonGroup();
-        group.add(req); group.add(max); group.add(sug);
+        group.add(req);
+        group.add(max);
+        group.add(sug);
         req.setSelected(true);
 
         JPanel options = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        options.add(req); options.add(max); options.add(sug);
+        options.add(req);
+        options.add(max);
+        options.add(sug);
         add(options, BorderLayout.NORTH);
 
         textArea.setEditable(false);
@@ -63,30 +69,30 @@ public class AnalysisDialog extends JDialog {
         double expenses = planner.calculateTotalExpenses();
         double balance = planner.calculateRemainingBalance();
         double saved = planner.calculateTotalSavingsForGoal();
-        String text = DialogUtil.buildPlanAnalysisText(goal, goal.months(), income,
-                expenses, balance, saved, type);
+        final String[] text = {DialogUtil.buildPlanAnalysisText(goal, goal.months(), income,
+                expenses, balance, saved, type)};
 
         GoalTemplate.fromName(goal.name()).ifPresent(t -> {
             String breakdown = t.buildBreakdownText();
             if (t == GoalTemplate.HOUSE) {
-                int idx = text.indexOf("Total expenses");
+                int idx = text[0].indexOf("Total expenses");
                 if (idx >= 0) {
-                    int end = text.indexOf('\n', idx);
+                    int end = text[0].indexOf('\n', idx);
                     if (end >= 0) {
-                        text = text.substring(0, end + 1) + breakdown +
-                                text.substring(end + 1);
+                        text[0] = text[0].substring(0, end + 1) + breakdown +
+                                text[0].substring(end + 1);
                     } else {
-                        text = text + "\n" + breakdown;
+                        text[0] = text[0] + "\n" + breakdown;
                     }
                 } else {
-                    text = text + "\n" + breakdown;
+                    text[0] = text[0] + "\n" + breakdown;
                 }
             } else {
-                text = text + "\n" + breakdown;
+                text[0] = text[0] + "\n" + breakdown;
             }
         });
 
-        textArea.setText(text);
+        textArea.setText(text[0]);
         textArea.setCaretPosition(0);
     }
 

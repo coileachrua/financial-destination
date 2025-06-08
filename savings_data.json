@@ -2,7 +2,7 @@
   "users" : [ {
     "name" : "Josh",
     "income" : 6800.0,
-    "currentSavings" : 0.0
+    "currentSavings" : 25000.0
   } ],
   "expenses" : [ {
     "name" : "Rent",
@@ -15,10 +15,10 @@
     "total" : 350.0
   }, {
     "name" : "Subscriptions",
-    "total" : 100.0
+    "total" : 110.0
   }, {
     "name" : "Internet & Mobile",
-    "total" : 80.0
+    "total" : 100.0
   }, {
     "name" : "Transport",
     "total" : 150.0

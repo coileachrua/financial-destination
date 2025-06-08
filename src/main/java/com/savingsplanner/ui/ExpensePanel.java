@@ -31,7 +31,7 @@ public class ExpensePanel extends JPanel {
         JTable table = tablePanel.getTable();
 
         JPanel inputs = new JPanel(new GridLayout(2, 2, 5, 5));
-        JTextField nameField  = new JTextField();
+        JTextField nameField = new JTextField();
         JTextField totalField = new JTextField();
         inputs.add(new JLabel("Category:"));
         inputs.add(nameField);
@@ -51,7 +51,7 @@ public class ExpensePanel extends JPanel {
                 Object catObj = table.getValueAt(r, 0);
                 Object totObj = table.getValueAt(r, 1);
                 try {
-                    String nm  = catObj.toString().trim();
+                    String nm = catObj.toString().trim();
                     double tot = parseCell(totObj);
                     // ensure the table stores a numeric value so it renders correctly
                     if (!(totObj instanceof Number)) {
@@ -68,18 +68,19 @@ public class ExpensePanel extends JPanel {
             }
         });
 
-        JButton addBtn    = new JButton("Add Expense");
+        JButton addBtn = new JButton("Add Expense");
         JButton removeBtn = new JButton("Remove Selected");
 
         addBtn.addActionListener((ActionEvent e) -> {
             try {
-                String nm  = nameField.getText().trim();
-                double tot = Double.parseDouble(totalField.getText().trim());
+                String nm = nameField.getText().trim();
+                double tot = parseCell(totalField);
                 if (nm.isEmpty()) throw new IllegalArgumentException();
                 planner.addExpense(new BudgetCategory(nm, tot));
                 persistence.save(planner);
                 tablePanel.addRow(nm, tot);
-                nameField.setText(""); totalField.setText("");
+                nameField.setText("");
+                totalField.setText("");
                 updateTotalLabel(planner, totalLabel);
                 log.info("Added expense {} = {}", nm, tot);
             } catch (Exception ex) {
