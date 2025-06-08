@@ -1,6 +1,7 @@
 package com.savingsplanner.ui;
 
 import com.savingsplanner.model.SavingsGoal;
+import com.savingsplanner.model.GoalTemplate;
 import com.savingsplanner.service.PersistenceService;
 import com.savingsplanner.service.SavingsPlanner;
 
@@ -21,6 +22,7 @@ public class GoalPanel extends JPanel {
     private final SavingsPlanner planner;
     private final PersistenceService persistence;
     private final JComboBox<SavingsGoal> selector = new JComboBox<>();
+    private final JComboBox<Object> templateBox = new JComboBox<>();
     private final JTextField nameField   = new JTextField();
     private final JTextField totalField  = new JTextField();
     private final JTextField monthsField = new JTextField();
@@ -66,7 +68,14 @@ public class GoalPanel extends JPanel {
         selector.addActionListener(e -> populateFields());
         left.add(selector, BorderLayout.NORTH);
 
-        JPanel inputs = new JPanel(new GridLayout(3,2,5,5));
+        JPanel inputs = new JPanel(new GridLayout(4,2,5,5));
+        templateBox.addItem("Custom");
+        for (GoalTemplate t : GoalTemplate.values()) {
+            templateBox.addItem(t);
+        }
+        templateBox.addActionListener(e -> applyTemplate());
+
+        inputs.add(new JLabel("Template:"));      inputs.add(templateBox);
         inputs.add(new JLabel("Goal Name:"));    inputs.add(nameField);
         inputs.add(new JLabel("Total (£):"));     inputs.add(totalField);
         inputs.add(new JLabel("Months:"));        inputs.add(monthsField);
@@ -100,6 +109,15 @@ public class GoalPanel extends JPanel {
         nameField  .setText(has ? g.name()   : "");
         totalField .setText(has ? String.valueOf(g.total())  : "");
         monthsField.setText(has ? String.valueOf(g.months()) : "");
+        templateBox.setSelectedIndex(0);
+    }
+
+    private void applyTemplate() {
+        Object sel = templateBox.getSelectedItem();
+        if (sel instanceof GoalTemplate t) {
+            nameField.setText(t.label());
+            totalField.setText(String.valueOf(t.total()));
+        }
     }
 
     private void onSaveGoal(ActionEvent e) {

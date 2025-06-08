@@ -1,6 +1,7 @@
 package com.savingsplanner.ui;
 
 import com.savingsplanner.model.SavingsGoal;
+import com.savingsplanner.model.GoalTemplate;
 import com.savingsplanner.service.SavingsPlanner;
 import com.savingsplanner.util.DialogUtil;
 import com.savingsplanner.util.PlanType;
@@ -62,9 +63,12 @@ public class AnalysisDialog extends JDialog {
         double expenses = planner.calculateTotalExpenses();
         double balance = planner.calculateRemainingBalance();
         double saved = planner.calculateTotalSavingsForGoal();
-        String text = DialogUtil.buildPlanAnalysisText(goal, goal.months(), income,
-                expenses, balance, saved, type);
-        textArea.setText(text);
+        StringBuilder sb = new StringBuilder();
+        GoalTemplate.fromName(goal.name())
+                .ifPresent(t -> sb.append(t.buildBreakdownText()).append("\n"));
+        sb.append(DialogUtil.buildPlanAnalysisText(goal, goal.months(), income,
+                expenses, balance, saved, type));
+        textArea.setText(sb.toString());
         textArea.setCaretPosition(0);
     }
 
