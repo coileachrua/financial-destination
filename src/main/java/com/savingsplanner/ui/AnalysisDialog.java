@@ -19,7 +19,7 @@ public class AnalysisDialog extends JDialog {
     private final SavingsGoal goal;
 
     private AnalysisDialog(JFrame parent, SavingsPlanner planner, SavingsGoal goal) {
-        super(parent, "Savings Goal Analysis", true);
+        scroll.setPreferredSize(new Dimension(650, 550));
         this.planner = planner;
         this.goal = goal;
         buildUI();

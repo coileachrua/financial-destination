@@ -78,6 +78,8 @@ public class UserPanel extends JPanel {
                     double inc = parseCell(incomeObj, fmt);
                     double sav = parseCell(savedObj, fmt);
                     planner.updateUser(row, new User(nm, inc, sav));
+                    table.setValueAt(inc, row, 1);
+                    table.setValueAt(sav, row, 2);
                     persistence.save(planner);
                     updateTotalLabel(planner, totalLabel);
                     log.info("Updated user {}", nm);
