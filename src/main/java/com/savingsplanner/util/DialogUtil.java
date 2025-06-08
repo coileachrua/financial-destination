@@ -1,6 +1,7 @@
 package com.savingsplanner.util;
 
 import com.savingsplanner.model.SavingsGoal;
+import com.savingsplanner.model.GoalTemplate;
 import com.savingsplanner.util.PlanType;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -51,7 +52,7 @@ public final class DialogUtil {
                                             double remainingBalance,
                                             double totalAlreadySaved) {
 
-        double goalTotal = goal.total();
+        double goalTotal = GoalTemplate.adjustedTotalFor(goal);
         double remainingNeed = goalTotal - totalAlreadySaved;
 
         if (remainingNeed <= 0) {
@@ -148,8 +149,9 @@ public final class DialogUtil {
         double saved = startingSaved;
         double yearStartSaved = saved;
 
+        double goalTotalLimit = GoalTemplate.adjustedTotalFor(goal);
         for (int m = 1; m <= months; m++) {
-            saved = Math.min(goal.total(), saved + monthlySavings);
+            saved = Math.min(goalTotalLimit, saved + monthlySavings);
             current = start.plusMonths(m);
 
             while (!current.isBefore(taxYearStart.plusYears(1))) {
@@ -190,7 +192,7 @@ public final class DialogUtil {
                                                double totalAlreadySaved,
                                                PlanType type) {
 
-        double goalTotal = goal.total();
+        double goalTotal = GoalTemplate.adjustedTotalFor(goal);
         double remainingNeed = goalTotal - totalAlreadySaved;
 
         if (remainingNeed <= 0) {

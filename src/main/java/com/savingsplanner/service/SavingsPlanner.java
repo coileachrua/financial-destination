@@ -2,6 +2,7 @@ package com.savingsplanner.service;
 
 import com.savingsplanner.model.BudgetCategory;
 import com.savingsplanner.model.SavingsGoal;
+import com.savingsplanner.model.GoalTemplate;
 import com.savingsplanner.model.User;
 
 import java.io.Serializable;
@@ -89,7 +90,8 @@ public class SavingsPlanner implements Serializable {
     }
 
     public double calculateMonthlySavingsRequired(SavingsGoal goal) {
-        double remaining = goal.total() - calculateTotalSavingsForGoal();
+        double adjusted = GoalTemplate.adjustedTotalFor(goal);
+        double remaining = adjusted - calculateTotalSavingsForGoal();
         return remaining / goal.months();
     }
 

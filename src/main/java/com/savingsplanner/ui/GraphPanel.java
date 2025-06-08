@@ -1,6 +1,7 @@
 package com.savingsplanner.ui;
 
 import com.savingsplanner.model.SavingsGoal;
+import com.savingsplanner.model.GoalTemplate;
 import com.savingsplanner.service.SavingsPlanner;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -62,7 +63,7 @@ public class GraphPanel extends JPanel {
         double suggestedMonthly = planner.calculateSuggestedSavings(goal)[0];
         double maxMonthly = planner.calculateRemainingBalance();
         double twentyMonthly = planner.calculateTotalIncome() * 0.20;
-        double goalTotal = goal.total();
+        double goalTotal = GoalTemplate.adjustedTotalFor(goal);
 
         double remainingNeed = Math.max(0, goalTotal - startSaved);
         int monthsMaxNeeded = maxMonthly > 0 ? (int) Math.ceil(remainingNeed / maxMonthly) : 0;

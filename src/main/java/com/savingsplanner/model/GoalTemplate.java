@@ -4,6 +4,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import com.savingsplanner.model.SavingsGoal;
+
 /**
  * Pre-defined savings goal templates with typical cost breakdowns.
  */
@@ -62,6 +64,15 @@ public enum GoalTemplate {
 
     public Map<String, Double> getBreakdown() {
         return Map.copyOf(breakdown);
+    }
+
+    /**
+     * Get the total adjusted for the template if the goal name matches a template.
+     */
+    public static double adjustedTotalFor(SavingsGoal goal) {
+        return fromName(goal.name())
+                .map(t -> t.adjustTotal(goal.total()))
+                .orElse(goal.total());
     }
 
     /**
