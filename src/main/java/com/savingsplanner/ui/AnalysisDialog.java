@@ -14,6 +14,8 @@ public class AnalysisDialog extends JDialog {
     private final JTextArea textArea = new JTextArea();
     private final SavingsPlanner planner;
     private final SavingsGoal goal;
+    private final JSlider splitSlider = new JSlider(0, 50, 20);
+    private final JLabel splitLabel = new JLabel();
 
     private AnalysisDialog(JFrame parent, SavingsPlanner planner, SavingsGoal goal) {
         super(parent, "Savings Goal Analysis", true);
@@ -40,6 +42,23 @@ public class AnalysisDialog extends JDialog {
         options.add(req); options.add(max); options.add(sug);
         add(options, BorderLayout.NORTH);
 
+        splitSlider.setMajorTickSpacing(10);
+        splitSlider.setMinorTickSpacing(1);
+        splitSlider.setPaintTicks(true);
+        splitSlider.addChangeListener(e -> {
+            splitLabel.setText("Savings " + splitSlider.getValue() + "% / Wants "
+                    + (50 - splitSlider.getValue()) + "%");
+            if (sug.isSelected()) updateText(PlanType.SUGGESTED);
+        });
+        splitLabel.setText("Savings 20% / Wants 30%");
+        splitLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        splitSlider.setEnabled(false);
+        JPanel sliderPanel = new JPanel();
+        sliderPanel.setLayout(new BoxLayout(sliderPanel, BoxLayout.Y_AXIS));
+        sliderPanel.add(splitLabel);
+        sliderPanel.add(splitSlider);
+        add(sliderPanel, BorderLayout.WEST);
+
         textArea.setEditable(false);
         textArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
         JScrollPane scroll = new JScrollPane(textArea);
@@ -52,9 +71,9 @@ public class AnalysisDialog extends JDialog {
         south.add(okBtn);
         add(south, BorderLayout.SOUTH);
 
-        req.addActionListener(e -> updateText(PlanType.REQUIRED));
-        max.addActionListener(e -> updateText(PlanType.MAX));
-        sug.addActionListener(e -> updateText(PlanType.SUGGESTED));
+        req.addActionListener(e -> {splitSlider.setEnabled(false); updateText(PlanType.REQUIRED);});
+        max.addActionListener(e -> {splitSlider.setEnabled(false); updateText(PlanType.MAX);});
+        sug.addActionListener(e -> {splitSlider.setEnabled(true); updateText(PlanType.SUGGESTED);});
     }
 
     private void updateText(PlanType type) {
@@ -62,8 +81,9 @@ public class AnalysisDialog extends JDialog {
         double expenses = planner.calculateTotalExpenses();
         double balance = planner.calculateRemainingBalance();
         double saved = planner.calculateTotalSavingsForGoal();
+        int savingsPct = splitSlider.getValue();
         String text = DialogUtil.buildPlanAnalysisText(goal, goal.months(), income,
-                expenses, balance, saved, type);
+                expenses, balance, saved, type, savingsPct / 100.0);
         textArea.setText(text);
         textArea.setCaretPosition(0);
     }
