@@ -63,12 +63,30 @@ public class AnalysisDialog extends JDialog {
         double expenses = planner.calculateTotalExpenses();
         double balance = planner.calculateRemainingBalance();
         double saved = planner.calculateTotalSavingsForGoal();
-        StringBuilder sb = new StringBuilder();
-        GoalTemplate.fromName(goal.name())
-                .ifPresent(t -> sb.append(t.buildBreakdownText()).append("\n"));
-        sb.append(DialogUtil.buildPlanAnalysisText(goal, goal.months(), income,
-                expenses, balance, saved, type));
-        textArea.setText(sb.toString());
+        String text = DialogUtil.buildPlanAnalysisText(goal, goal.months(), income,
+                expenses, balance, saved, type);
+
+        GoalTemplate.fromName(goal.name()).ifPresent(t -> {
+            String breakdown = t.buildBreakdownText();
+            if (t == GoalTemplate.HOUSE) {
+                int idx = text.indexOf("Total expenses");
+                if (idx >= 0) {
+                    int end = text.indexOf('\n', idx);
+                    if (end >= 0) {
+                        text = text.substring(0, end + 1) + breakdown +
+                                text.substring(end + 1);
+                    } else {
+                        text = text + "\n" + breakdown;
+                    }
+                } else {
+                    text = text + "\n" + breakdown;
+                }
+            } else {
+                text = text + "\n" + breakdown;
+            }
+        });
+
+        textArea.setText(text);
         textArea.setCaretPosition(0);
     }
 
