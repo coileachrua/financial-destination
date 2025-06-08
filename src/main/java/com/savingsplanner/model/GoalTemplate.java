@@ -39,8 +39,25 @@ public enum GoalTemplate {
         return label;
     }
 
+    /**
+     * @return the sum of the template breakdown values. For the house template
+     * this represents the additional costs excluding any deposit.
+     */
     public double total() {
         return total;
+    }
+
+    /**
+     * Adjust the user supplied goal total according to this template. For
+     * {@link #HOUSE} the additional costs are added to the provided total
+     * (assumed to be the deposit). For other templates the amount is returned
+     * unchanged.
+     */
+    public double adjustTotal(double userTotal) {
+        if (this == HOUSE) {
+            return userTotal + total;
+        }
+        return userTotal;
     }
 
     public Map<String, Double> getBreakdown() {
@@ -64,11 +81,19 @@ public enum GoalTemplate {
      */
     public String buildBreakdownText() {
         StringBuilder sb = new StringBuilder();
-        sb.append(label).append(" Cost Breakdown:\n");
+        if (this == HOUSE) {
+            sb.append(label).append(" Additional Costs Breakdown:\n");
+        } else {
+            sb.append("Average ").append(label).append(" Cost Breakdown:\n");
+        }
         for (Map.Entry<String, Double> e : breakdown.entrySet()) {
             sb.append(String.format(" - %s: £%,.2f%n", e.getKey(), e.getValue()));
         }
-        sb.append(String.format("Total: £%,.2f%n", total));
+        if (this == HOUSE) {
+            sb.append(String.format("Total Extras: £%,.2f%n", total));
+        } else {
+            sb.append(String.format("Total: £%,.2f%n", total));
+        }
         return sb.toString();
     }
 }

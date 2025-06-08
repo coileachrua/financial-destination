@@ -116,7 +116,6 @@ public class GoalPanel extends JPanel {
         Object sel = templateBox.getSelectedItem();
         if (sel instanceof GoalTemplate t) {
             nameField.setText(t.label());
-            totalField.setText(String.valueOf(t.total()));
         }
     }
 
@@ -126,6 +125,11 @@ public class GoalPanel extends JPanel {
             double total  = Double.parseDouble(totalField.getText().trim());
             int    months = Integer.parseInt(monthsField.getText().trim());
             if (name.isEmpty() || months <= 0) throw new IllegalArgumentException();
+
+            Object sel = templateBox.getSelectedItem();
+            if (sel instanceof GoalTemplate t) {
+                total = t.adjustTotal(total);
+            }
 
             SavingsGoal g = new SavingsGoal(name, total, months);
             planner.setGoal(g);
