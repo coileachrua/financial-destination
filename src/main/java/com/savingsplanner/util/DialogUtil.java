@@ -201,8 +201,8 @@ public final class DialogUtil {
         }
 
         double needs = totalIncome * 0.50;
-        double wants = totalIncome * 0.30;
-        double savings = totalIncome * 0.20;
+        double wants = totalIncome * (0.50 - savingsFraction);
+        double savings = totalIncome * savingsFraction;
 
         double monthlyPlan;
         String label;

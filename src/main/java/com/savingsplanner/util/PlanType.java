@@ -6,6 +6,6 @@ public enum PlanType {
     REQUIRED,
     /** Maximum possible monthly savings based on current balance. */
     MAX,
-    /** 50/30/20 suggested monthly savings (20% of income). */
+    /** 50/30/20 style suggestion (adjustable savings percent). */
     SUGGESTED
 }
