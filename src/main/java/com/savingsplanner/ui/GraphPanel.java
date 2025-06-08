@@ -32,13 +32,25 @@ public class GraphPanel extends JPanel {
     private static final long serialVersionUID = 46365252L;
 
     private final ChartPanel chartPanel;
+    private final SavingsPlanner planner;
+    private final SavingsGoal goal;
+    private final int months;
+    private double savingsFraction;
 
-    public GraphPanel(SavingsPlanner planner, SavingsGoal goal, int months) {
+    public GraphPanel(SavingsPlanner planner,
+                      SavingsGoal goal,
+                      int months,
+                      double savingsFraction) {
         setLayout(new BorderLayout());
+        this.planner = planner;
+        this.goal = goal;
+        this.months = months;
+        this.savingsFraction = savingsFraction;
+
         log.info("Generating chart for goal {}", goal.name());
 
         double balance = planner.calculateRemainingBalance();
-        TimeSeriesCollection dataset = buildDataset(planner, goal, months);
+        TimeSeriesCollection dataset = buildDataset(planner, goal, months, savingsFraction);
         JFreeChart chart = buildChart(dataset);
 
         chartPanel = new ChartPanel(chart);
@@ -57,11 +69,14 @@ public class GraphPanel extends JPanel {
         add(saveButton, BorderLayout.SOUTH);
     }
 
-    private TimeSeriesCollection buildDataset(SavingsPlanner planner, SavingsGoal goal, int months) {
+    private TimeSeriesCollection buildDataset(SavingsPlanner planner,
+                                              SavingsGoal goal,
+                                              int months,
+                                              double savingsFraction) {
         double startSaved = planner.calculateTotalSavingsForGoal();
         double suggestedMonthly = planner.calculateSuggestedSavings(goal)[0];
         double maxMonthly = planner.calculateRemainingBalance();
-        double twentyMonthly = planner.calculateTotalIncome() * 0.20;
+        double twentyMonthly = planner.calculateTotalIncome() * savingsFraction;
         double goalTotal = goal.total();
 
         double remainingNeed = Math.max(0, goalTotal - startSaved);
@@ -93,6 +108,17 @@ public class GraphPanel extends JPanel {
             dataset.addSeries(twentySeries);
         }
         return dataset;
+    }
+
+    /**
+     * Rebuild the dataset and refresh the chart with the provided savings percentage.
+     */
+    public void updateData(double savingsFraction) {
+        this.savingsFraction = savingsFraction;
+        TimeSeriesCollection dataset = buildDataset(planner, goal, months, savingsFraction);
+        chartPanel.setChart(buildChart(dataset));
+        revalidate();
+        repaint();
     }
 
     private JFreeChart buildChart(TimeSeriesCollection dataset) {

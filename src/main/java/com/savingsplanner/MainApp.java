@@ -108,15 +108,6 @@ public class MainApp {
             return;
         }
 
-        int months = goal.months();
-
         AnalysisDialog.showDialog(frame, planner, goal);
-
-        GraphPanel chart = new GraphPanel(planner, goal, months);
-        JDialog dlg = new JDialog(frame, "Savings Trajectory", true);
-        dlg.getContentPane().add(chart);
-        dlg.pack();
-        dlg.setLocationRelativeTo(frame);
-        dlg.setVisible(true);
     }
 }

@@ -16,6 +16,7 @@ public class AnalysisDialog extends JDialog {
     private final SavingsGoal goal;
     private final JSlider splitSlider = new JSlider(0, 50, 20);
     private final JLabel splitLabel = new JLabel();
+    private GraphPanel graphPanel;
 
     private AnalysisDialog(JFrame parent, SavingsPlanner planner, SavingsGoal goal) {
         super(parent, "Savings Goal Analysis", true);
@@ -65,10 +66,15 @@ public class AnalysisDialog extends JDialog {
         scroll.setPreferredSize(new Dimension(550, 500));
         add(scroll, BorderLayout.CENTER);
 
+        graphPanel = new GraphPanel(planner, goal, goal.months(), splitSlider.getValue() / 100.0);
+
         JButton okBtn = new JButton("OK");
         okBtn.addActionListener(e -> dispose());
-        JPanel south = new JPanel();
-        south.add(okBtn);
+        JPanel south = new JPanel(new BorderLayout());
+        south.add(graphPanel, BorderLayout.CENTER);
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(okBtn);
+        south.add(buttonPanel, BorderLayout.SOUTH);
         add(south, BorderLayout.SOUTH);
 
         req.addActionListener(e -> {splitSlider.setEnabled(false); updateText(PlanType.REQUIRED);});
@@ -86,6 +92,9 @@ public class AnalysisDialog extends JDialog {
                 expenses, balance, saved, type, savingsPct / 100.0);
         textArea.setText(text);
         textArea.setCaretPosition(0);
+        if (graphPanel != null) {
+            graphPanel.updateData(savingsPct / 100.0);
+        }
     }
 
     public static void showDialog(JFrame parent, SavingsPlanner planner, SavingsGoal goal) {
