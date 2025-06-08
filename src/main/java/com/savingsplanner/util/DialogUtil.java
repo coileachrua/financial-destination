@@ -69,7 +69,7 @@ public final class DialogUtil {
         double needs = totalIncome * 0.50;
         double wants = totalIncome * 0.30;
         double savings = totalIncome * 0.20;
-        sb.append("4) 50/30/20 rule suggestion:\n");
+        sb.append("4) 50/30/20 rule suggestion (ignores expenses):\n");
         sb.append(String.format("   • Needs (50%%): £%,.2f%n", needs));
         sb.append(String.format("   • Wants (30%%): £%,.2f%n", wants));
         sb.append(String.format("   • Savings (20%%): £%,.2f%n%n", savings));
@@ -198,7 +198,7 @@ public final class DialogUtil {
             }
             case SUGGESTED -> {
                 monthlyPlan = totalIncome * 0.20;
-                label = "50/30/20 Suggestion";
+                label = "50/30/20 Suggestion (ignores expenses)";
             }
             default -> {
                 monthlyPlan = 0;
