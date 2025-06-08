@@ -185,6 +185,10 @@ public final class DialogUtil {
         double goalTotal = goal.total();
         double remainingNeed = goalTotal - totalAlreadySaved;
 
+        double needs = totalIncome * 0.50;
+        double wants = totalIncome * 0.30;
+        double savings = totalIncome * 0.20;
+
         double monthlyPlan;
         String label;
         switch (type) {
@@ -197,7 +201,7 @@ public final class DialogUtil {
                 label = "Maximum Savings";
             }
             case SUGGESTED -> {
-                monthlyPlan = totalIncome * 0.20;
+                monthlyPlan = savings;
                 label = "50/30/20 Suggestion (ignores expenses)";
             }
             default -> {
@@ -215,8 +219,14 @@ public final class DialogUtil {
         sb.append("Date run: ").append(today.format(ukFmt)).append("\n\n");
 
         sb.append(String.format("Total income: £%,.2f%n", totalIncome));
-        sb.append(String.format("Total expenses: £%,.2f%n", totalExpenses));
-        sb.append(String.format("Remaining balance: £%,.2f%n", remainingBalance));
+        if (type == PlanType.SUGGESTED) {
+            sb.append(String.format("Total expenses (50%%): £%,.2f%n", needs));
+            sb.append(String.format("Wants (30%%): £%,.2f%n", wants));
+            sb.append(String.format("Savings (20%%): £%,.2f%n", savings));
+        } else {
+            sb.append(String.format("Total expenses: £%,.2f%n", totalExpenses));
+            sb.append(String.format("Remaining balance: £%,.2f%n", remainingBalance));
+        }
         sb.append(String.format("Already saved: £%,.2f%n%n", totalAlreadySaved));
 
         sb.append(String.format("Monthly contribution: £%,.2f%n", monthlyPlan));
