@@ -43,7 +43,7 @@ public class AnalysisDialog extends JDialog {
         textArea.setEditable(false);
         textArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
         JScrollPane scroll = new JScrollPane(textArea);
-        scroll.setPreferredSize(new Dimension(550, 400));
+        scroll.setPreferredSize(new Dimension(550, 500));
         add(scroll, BorderLayout.CENTER);
 
         JButton okBtn = new JButton("OK");
