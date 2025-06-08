@@ -188,7 +188,8 @@ public final class DialogUtil {
                                                double totalExpenses,
                                                double remainingBalance,
                                                double totalAlreadySaved,
-                                               PlanType type) {
+                                               PlanType type,
+                                               double savingsFraction) {
 
         double goalTotal = goal.total();
         double remainingNeed = goalTotal - totalAlreadySaved;
@@ -200,8 +201,8 @@ public final class DialogUtil {
         }
 
         double needs = totalIncome * 0.50;
-        double wants = totalIncome * 0.30;
-        double savings = totalIncome * 0.20;
+        double wants = totalIncome * (0.50 - savingsFraction);
+        double savings = totalIncome * savingsFraction;
 
         double monthlyPlan;
         String label;
@@ -216,7 +217,8 @@ public final class DialogUtil {
             }
             case SUGGESTED -> {
                 monthlyPlan = savings;
-                label = "50/30/20 Suggestion (ignores expenses)";
+                label = String.format("50/%.0f/%.0f Suggestion (ignores expenses)",
+                        (50 - savingsFraction * 100), savingsFraction * 100);
             }
             default -> {
                 monthlyPlan = 0;
@@ -235,8 +237,8 @@ public final class DialogUtil {
         sb.append(String.format("Total income: £%,.2f%n", totalIncome));
         if (type == PlanType.SUGGESTED) {
             sb.append(String.format("Total expenses (50%%): £%,.2f%n", needs));
-            sb.append(String.format("Wants (30%%): £%,.2f%n", wants));
-            sb.append(String.format("Savings (20%%): £%,.2f%n", savings));
+            sb.append(String.format("Wants (%.0f%%): £%,.2f%n", (50 - savingsFraction * 100), wants));
+            sb.append(String.format("Savings (%.0f%%): £%,.2f%n", savingsFraction * 100, savings));
         } else {
             sb.append(String.format("Total expenses: £%,.2f%n", totalExpenses));
             sb.append(String.format("Remaining balance: £%,.2f%n", remainingBalance));
