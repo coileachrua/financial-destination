@@ -5,9 +5,9 @@ import com.savingsplanner.model.SavingsGoal;
 import com.savingsplanner.model.User;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class SavingsPlannerTest {
+class SavingsPlannerTest {
 
     @Test
     void calculatesTotalIncome() {

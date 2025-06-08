@@ -1,9 +1,9 @@
+package com.savingsplanner.ui;
+
 import com.savingsplanner.model.BudgetCategory;
 import com.savingsplanner.model.User;
 import com.savingsplanner.service.PersistenceService;
 import com.savingsplanner.service.SavingsPlanner;
-import com.savingsplanner.ui.ExpensePanel;
-import com.savingsplanner.ui.UserPanel;
 import org.junit.jupiter.api.Test;
 
 import javax.swing.*;
@@ -11,7 +11,7 @@ import java.lang.reflect.Method;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class PanelFormatTest {
+class PanelFormatTest {
     @Test
     void userPanelFormatsTotalInUKCurrency() throws Exception {
         SavingsPlanner planner = new SavingsPlanner();

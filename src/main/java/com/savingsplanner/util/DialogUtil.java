@@ -8,6 +8,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DialogUtil {
@@ -116,8 +118,36 @@ public final class DialogUtil {
                 sb.append(String.format("   • Saving the 20%% amount (£%,.2f) hits £%,.2f on: %s%n",
                         savings, goalTotal, dateAtTwenty.format(ukFmt)));
             }
+
+            double monthlyPlan = isAchievable ? requiredMonthly : remainingBalance;
+            sb.append("\nSavings per UK tax year (starting 6 April 2025):\n");
+            sb.append(buildTaxYearSchedule(today, totalAlreadySaved, monthlyPlan, goal));
         }
 
+        return sb.toString();
+    }
+
+    private static String buildTaxYearSchedule(LocalDate start,
+                                               double startingSaved,
+                                               double monthlySavings,
+                                               SavingsGoal goal) {
+        Map<String, Double> map = new LinkedHashMap<>();
+        LocalDate taxYearStart = LocalDate.of(2025, 4, 6);
+        LocalDate current = start;
+        double saved = startingSaved;
+        for (int m = 1; m <= goal.months(); m++) {
+            saved = Math.min(goal.total(), saved + monthlySavings);
+            current = start.plusMonths(m);
+            while (!current.isBefore(taxYearStart.plusYears(1))) {
+                taxYearStart = taxYearStart.plusYears(1);
+            }
+            String label = taxYearStart.getYear() + "/" + (taxYearStart.plusYears(1).getYear());
+            map.put(label, saved);
+        }
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String, Double> e : map.entrySet()) {
+            sb.append(String.format("   • %s: £%,.2f%n", e.getKey(), e.getValue()));
+        }
         return sb.toString();
     }
 }

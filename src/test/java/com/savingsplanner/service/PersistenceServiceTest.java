@@ -6,13 +6,12 @@ import com.savingsplanner.model.User;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import java.nio.file.Path;
 import java.util.prefs.Preferences;
 
-import java.nio.file.Path;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-public class PersistenceServiceTest {
+class PersistenceServiceTest {
 
     @Test
     void saveAndLoadRestoresData(@TempDir Path tempDir) {

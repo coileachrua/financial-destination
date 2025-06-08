@@ -100,7 +100,7 @@ public class ExpensePanel extends JPanel {
         add(container, BorderLayout.CENTER);
     }
 
-    private double parseCell(Object value) throws Exception {
+    private double parseCell(Object value) {
         if (value instanceof Number n) {
             return n.doubleValue();
         }
@@ -109,7 +109,7 @@ public class ExpensePanel extends JPanel {
         try {
             return fmt.parse(txt).doubleValue();
         } catch (Exception ex) {
-            return Double.parseDouble(txt.replaceAll("[^0-9.\-]", ""));
+            return Double.parseDouble(txt.replace(".0", ""));
         }
     }
 
