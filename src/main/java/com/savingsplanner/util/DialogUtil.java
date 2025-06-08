@@ -54,6 +54,12 @@ public final class DialogUtil {
         double goalTotal = goal.total();
         double remainingNeed = goalTotal - totalAlreadySaved;
 
+        if (remainingNeed <= 0) {
+            return String.format(
+                    "Savings Goal: \u201c%s\u201d (\u00A3%,.2f)%nGoal has already been reached!%n",
+                    goal.name(), goalTotal);
+        }
+
         StringBuilder sb = new StringBuilder();
         LocalDate today = LocalDate.now();
         DateTimeFormatter ukFmt = DateTimeFormatter.ofPattern("d MMMM yyyy");
@@ -122,7 +128,8 @@ public final class DialogUtil {
 
             double monthlyPlan = isAchievable ? requiredMonthly : remainingBalance;
             sb.append("\nSavings per UK tax year (starting 6 April 2025):\n");
-            sb.append(buildTaxYearSchedule(today, totalAlreadySaved, monthlyPlan, goal));
+            int monthsPlan = (int) Math.ceil(remainingNeed / monthlyPlan);
+            sb.append(buildTaxYearSchedule(today, totalAlreadySaved, monthlyPlan, goal, monthsPlan));
         }
 
         return sb.toString();
@@ -131,7 +138,8 @@ public final class DialogUtil {
     private static String buildTaxYearSchedule(LocalDate start,
                                                double startingSaved,
                                                double monthlySavings,
-                                               SavingsGoal goal) {
+                                               SavingsGoal goal,
+                                               int months) {
         record Info(double start, double added, double end) {}
 
         Map<String, Info> map = new LinkedHashMap<>();
@@ -140,7 +148,7 @@ public final class DialogUtil {
         double saved = startingSaved;
         double yearStartSaved = saved;
 
-        for (int m = 1; m <= goal.months(); m++) {
+        for (int m = 1; m <= months; m++) {
             saved = Math.min(goal.total(), saved + monthlySavings);
             current = start.plusMonths(m);
 
@@ -184,6 +192,12 @@ public final class DialogUtil {
 
         double goalTotal = goal.total();
         double remainingNeed = goalTotal - totalAlreadySaved;
+
+        if (remainingNeed <= 0) {
+            return String.format(
+                    "Savings Goal: \u201c%s\u201d (\u00A3%,.2f)%nGoal has already been reached!%n",
+                    goal.name(), goalTotal);
+        }
 
         double needs = totalIncome * 0.50;
         double wants = totalIncome * 0.30;
@@ -242,7 +256,8 @@ public final class DialogUtil {
         sb.append(String.format("Projected completion: %s%n%n", finish.format(ukFmt)));
 
         sb.append("Savings per UK tax year (starting 6 April 2025):\n");
-        sb.append(buildTaxYearSchedule(today, totalAlreadySaved, monthlyPlan, goal));
+        sb.append(buildTaxYearSchedule(
+                today, totalAlreadySaved, monthlyPlan, goal, monthsNeeded));
 
         return sb.toString();
     }
