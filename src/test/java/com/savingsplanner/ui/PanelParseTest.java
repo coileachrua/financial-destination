@@ -10,7 +10,7 @@ import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class PanelParseTest {
+ class PanelParseTest {
     @Test
     void userPanelParsesPlainNumber() throws Exception {
         SavingsPlanner planner = new SavingsPlanner();

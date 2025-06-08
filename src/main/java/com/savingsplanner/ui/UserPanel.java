@@ -7,6 +7,7 @@ import com.savingsplanner.ui.common.EditableTablePanel;
 import com.savingsplanner.ui.common.NumberEditor;
 import com.savingsplanner.ui.common.NumberRenderer;
 import com.savingsplanner.ui.common.TwoColumnPanel;
+import lombok.extern.log4j.Log4j2;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -15,9 +16,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.Serial;
 import java.text.NumberFormat;
-import java.util.Currency;
 import java.util.Locale;
-import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 public class UserPanel extends JPanel {
@@ -129,7 +128,7 @@ public class UserPanel extends JPanel {
         add(container, BorderLayout.CENTER);
     }
 
-    private double parseCell(Object value, NumberFormat fmt) throws Exception {
+    private double parseCell(Object value, NumberFormat fmt) {
         if (value instanceof Number n) {
             return n.doubleValue();
         }
@@ -137,7 +136,7 @@ public class UserPanel extends JPanel {
         try {
             return fmt.parse(txt).doubleValue();
         } catch (Exception ex) {
-            return Double.parseDouble(txt.replaceAll("[^0-9.\-]", ""));
+            return Double.parseDouble(txt);
         }
     }
 
