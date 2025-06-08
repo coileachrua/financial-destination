@@ -131,22 +131,41 @@ public final class DialogUtil {
                                                double startingSaved,
                                                double monthlySavings,
                                                SavingsGoal goal) {
-        Map<String, Double> map = new LinkedHashMap<>();
+        record Info(double start, double added, double end) {}
+
+        Map<String, Info> map = new LinkedHashMap<>();
         LocalDate taxYearStart = LocalDate.of(2025, 4, 6);
         LocalDate current = start;
         double saved = startingSaved;
+        double yearStartSaved = saved;
+
         for (int m = 1; m <= goal.months(); m++) {
             saved = Math.min(goal.total(), saved + monthlySavings);
             current = start.plusMonths(m);
+
             while (!current.isBefore(taxYearStart.plusYears(1))) {
+                String label = taxYearStart.getYear() + "/" +
+                        (taxYearStart.plusYears(1).getYear());
+                double added = saved - yearStartSaved;
+                map.put(label, new Info(yearStartSaved, added, saved));
                 taxYearStart = taxYearStart.plusYears(1);
+                yearStartSaved = saved;
             }
-            String label = taxYearStart.getYear() + "/" + (taxYearStart.plusYears(1).getYear());
-            map.put(label, saved);
         }
+
+        String label = taxYearStart.getYear() + "/" +
+                (taxYearStart.plusYears(1).getYear());
+        if (!map.containsKey(label)) {
+            double added = saved - yearStartSaved;
+            map.put(label, new Info(yearStartSaved, added, saved));
+        }
+
         StringBuilder sb = new StringBuilder();
-        for (Map.Entry<String, Double> e : map.entrySet()) {
-            sb.append(String.format("   • %s: £%,.2f%n", e.getKey(), e.getValue()));
+        for (Map.Entry<String, Info> e : map.entrySet()) {
+            Info info = e.getValue();
+            sb.append(String.format(
+                    "   • %s: start £%,.2f + £%,.2f = £%,.2f%n",
+                    e.getKey(), info.start(), info.added(), info.end()));
         }
         return sb.toString();
     }
